@@ -2,10 +2,6 @@ package zgs.httpd
 
 import scala.util.continuations._
 
-trait HLetExecutor {
-  def submit(req : HReqData, run : Runnable)
-}
-
 object HLet {
   val exe = new zgs.sync.SyncExe(10, Int.MaxValue, "HLetResumer")
 }
@@ -39,15 +35,6 @@ trait HLet[T] {
   final protected def suspend = shift { k : (T => Unit) =>
     onSuspend
     kont = Some(k)
-  }
-
-  // TODO improve to make it tail recursive using trampolining
-  final protected def swhile(cond : => Boolean)(block : => Unit @scala.util.continuations.suspendable) : Unit @scala.util.continuations.suspendable = {
-    if (cond) {
-      block
-      swhile(cond)(block)
-    } else
-      ()
   }
 
   protected def err(status : HStatus.Value, msg : String, tk : HTalk) = new let.ErrLet(status, msg) act (tk)
