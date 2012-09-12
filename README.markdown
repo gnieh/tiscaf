@@ -12,11 +12,11 @@ Many thanks to him for his help and answers.
 Motivations
 -----------
 
-Very often a current software exosphere makes almost impossible to do things a simple way. Almost all developers are under heavy pressure of dependency on J2EE and accompanying frameworks with dozens of external libraries (how many megabytes do those external jars take?). All you know these software monsters with infinite dependencies trees... I have decided I need more freedom.
+Very often the current software exosphere makes it almost impossible to do things in a simple way. Almost all developers are under heavy pressure of dependency on J2EE and accompanying frameworks with dozens of external libraries (how many megabytes do those external jars take?). Any of you know these software monsters with infinite dependency trees... What if you need more freedom?
 
-OTOH, if you like to spend your life dealing with extraneous-designed XML-files (rather coding) and/or to satisfy multiple APIs presenting good ideas (even if last ones are indeed good), be warned - tiscaf lives in another world.
+OTOH, if you like to spend your life dealing with extraneous-designed XML-files (rather than coding) and/or to satisfy multiple APIs exposing good ideas (even if they are indeed good), be warned - tiscaf lives in another world.
 
-The server has just what you need to handle an HTTP request, no more. I treat the server as a low-level self-contained "assembly" module (being used instead of servlet engine) which is easy to embed into any application as well as to wrap with, say, own templating framework, with any dispatching model (besides included helper for tree-like URIs space), with this or that (besides default) execution environment (say, Comet-like), and so on. 
+The server has just what you need to handle an HTTP request, no more. tiscaf treats the server as a low-level self-contained "assembly" module (being used instead of servlet engine) which is easy to embed into any application as well as to wrap with, say, own templating framework, any dispatching model (besides included helper for tree-like URIs space), this or that (besides default) execution environment (say, Comet-like), and so on. 
 
 Features
 --------
