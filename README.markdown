@@ -6,7 +6,7 @@ Introduction
 
 tiscaf is an http server written in and intended to be used with the Scala programming language. 
 
-This project is based on the original project by Andrew Gaydenko (http://gaydenko.com/scala/tiscaf/httpd/) in its version 0.7. This explains why the software version starts at 0.8 in this repository.
+This project is based on the original work by Andrew Gaydenko (http://gaydenko.com/scala/tiscaf/httpd/) in its version 0.7. This explains why the software version starts at 0.8 in this repository.
 Many thanks to him for his help and answers.
 
 Motivations
