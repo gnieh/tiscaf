@@ -7,7 +7,7 @@ import java.io.RandomAccessFile
 
 protected class FiLet(path : String, bufSize : Int, plainAsDefault : Boolean) extends HLet[Nothing] {
 
-  def act(tk : HTalk) : Unit @scala.util.continuations.suspendable = {
+  def act(tk : HTalk) = {
     val f = new java.io.File(path)
     if (f.exists && f.isFile) {
 

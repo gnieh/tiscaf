@@ -4,12 +4,11 @@ object HTree {
   implicit def string2lay(aDir : String) = new HTree { override def dir = aDir }
 
   def stub(text : String) : HLet[_] = new HLet[Nothing] {
-    def act(tk : HTalk) : Unit @scala.util.continuations.suspendable = {
+    def act(tk : HTalk) = {
       val out = tk.bytes(text)
       tk.setContentLength(out.length) // if not buffered
         .setContentType("text/plain; charset=UTF-8")
         .write(out)
-      ()
     }
   }
 }

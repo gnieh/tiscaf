@@ -42,13 +42,12 @@ import DirLet._
 
 protected class DirLet(dirRoot : String, uriRoot : String, pathRest : String) extends HLet[Nothing] {
 
-  def act(tk : HTalk) : Unit @scala.util.continuations.suspendable = {
+  def act(tk : HTalk) = {
     val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
     val f = new java.io.File(dirRoot + pathRest)
     if (f.exists && f.isDirectory) {
       val out = tk.bytes(showDir(f, uriExt))
       tk.setContentLength(out.length).setContentType("text/html").write(out)
-      ()
     } else new ErrLet(HStatus.NotFound) act (tk)
   }
 

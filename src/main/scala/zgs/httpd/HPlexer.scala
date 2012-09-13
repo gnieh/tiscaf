@@ -12,6 +12,7 @@ private trait HPlexer {
   def timeoutMillis : Long
   def tcpNoDelay : Boolean
   def onError(e : Throwable) : Unit
+  def ssl : Option[HSslData]
 
   //---------------------- SPI ------------------------------------------
 

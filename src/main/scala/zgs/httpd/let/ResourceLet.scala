@@ -45,7 +45,7 @@ trait ResourceLet extends HLet[Nothing] {
 
   //------------------ HLet implemented --------------------
 
-  def act(tk : HTalk) : Unit @scala.util.continuations.suspendable = if ((tk.req.uriPath).startsWith(theUriRoot)) {
+  def act(tk : HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
     val path = resolvePath(tk)
 
     val fullPathAndStream = ("" +: indexes)

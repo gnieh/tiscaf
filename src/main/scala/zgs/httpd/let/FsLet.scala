@@ -32,7 +32,7 @@ trait FsLet extends HLet[Nothing] {
 
   //------------------ HLet implemented --------------------
 
-  def act(tk : HTalk) : Unit @scala.util.continuations.suspendable = if ((tk.req.uriPath).startsWith(theUriRoot)) {
+  def act(tk : HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
     val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
 
     val pathRest = tk.req.uriPath.substring(theUriRoot.length)

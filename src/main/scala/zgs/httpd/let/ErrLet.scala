@@ -3,7 +3,7 @@ package let
 
 class ErrLet(status : HStatus.Value, msg : String = "") extends HLet[Nothing] {
 
-  def act(tk : HTalk) : Unit @scala.util.continuations.suspendable = {
+  def act(tk : HTalk) = {
     val add = if (msg.length == 0) "" else ", " + msg
     val toWrite = (HStatus.asString(status) + add + "\n").getBytes("ISO-8859-1")
 
