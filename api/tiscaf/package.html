@@ -1,0 +1,412 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>tiscaf</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../lib/template.css" />
+      <script type="text/javascript" src="../lib/jquery.js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body onload="sh_highlightDocument('../lib/', '.min.js');" class="value">
+      <div id="definition">
+        <img src="../lib/package_big.png" />
+        
+        <h1>tiscaf</h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tiscaf</span>
+      </span>
+      </h4>
+      
+      <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>The tiscaf server is a lightweight and easy way to integrate an HTTP
+ server to your application.
+</p></div></div>
+    
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div class="types members" id="types">
+              <h3>Type Members</h3>
+              <ol><li visbl="pub" name="tiscaf.HApp" data-isabs="true">
+      <a id="HApp:HApp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HApp.html"><span class="name">HApp</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">An application is a group of request handlers (<a name="tiscaf.HLet" class="extype" href="HLet.html">HLet</a>s)
+ sharing common behaviour.</p>
+    </li><li visbl="pub" name="tiscaf.HLet" data-isabs="true">
+      <a id="HLet:HLet[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HLet.html"><span class="name">HLet</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Handles an HTTP request and makes some computation.</p>
+    </li><li visbl="pub" name="tiscaf.HPartDescriptor" data-isabs="true">
+      <a id="HPartDescriptor:HPartDescriptor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HPartDescriptor.html"><span class="name">HPartDescriptor</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HPartsAcceptor" data-isabs="true">
+      <a id="HPartsAcceptor:HPartsAcceptor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HPartsAcceptor.html"><span class="name">HPartsAcceptor</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Accepts uploaded files with POST multiparts method.</p>
+    </li><li visbl="pub" name="tiscaf.HReqData" data-isabs="true">
+      <a id="HReqData:HReqData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HReqData.html"><span class="name">HReqData</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Request data contains following elements:</p>
+    </li><li visbl="pub" name="tiscaf.HReqHeaderData" data-isabs="true">
+      <a id="HReqHeaderData:HReqHeaderData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HReqHeaderData.html"><span class="name">HReqHeaderData</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Contains the request header data:</p>
+    </li><li visbl="pub" name="tiscaf.HRestApp" data-isabs="false">
+      <a id="HRestApp:HRestApp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HRestApp.html"><span class="name">HRestApp</span></a><span class="result"> extends HApp</span>
+      </span>
+      </h4>
+      <p class="comment cmt">This HApp gives to the user some utility methods to easily write
+ RESTful services.</p>
+    </li><li visbl="pub" name="tiscaf.HServer" data-isabs="true">
+      <a id="HServer:HServer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HServer.html"><span class="name">HServer</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A server provides:</p>
+    </li><li visbl="pub" name="tiscaf.HSimpleLet" data-isabs="true">
+      <a id="HSimpleLet:HSimpleLet"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HSimpleLet.html"><span class="name">HSimpleLet</span></a><span class="result"> extends HLet[Nothing]</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A simple <a name="tiscaf.HLet" class="extype" href="HLet.html">HLet</a> that will not be suspended.</p>
+    </li><li visbl="pub" name="tiscaf.HSslData" data-isabs="true">
+      <a id="HSslData:HSslData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HSslData.html"><span class="name">HSslData</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">SSL settings data.</p>
+    </li><li visbl="pub" name="tiscaf.HStop" data-isabs="false">
+      <a id="HStop:HStop"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HStop.html"><span class="name">HStop</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HTalk" data-isabs="false">
+      <a id="HTalk:HTalk"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HTalk.html"><span class="name">HTalk</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">This is the way an <a name="tiscaf.HLet" class="extype" href="HLet.html">HLet</a> accesses to the world.</p>
+    </li><li visbl="pub" name="tiscaf.HTree" data-isabs="true">
+      <a id="HTree:HTree"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HTree.html"><span class="name">HTree</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">If your application has (at least partly) tree-like structure
+ (URI nodes correspond to request handlers), you can assign handlers
+ to tree nodes in eyes-friendly manner:</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="prt" name="tiscaf.HHeaderKeys" data-isabs="false">
+      <a id="HHeaderKeys:HHeaderKeys"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HHeaderKeys$.html"><span class="name">HHeaderKeys</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li visbl="pub" name="tiscaf.HMime" data-isabs="false">
+      <a id="HMime:HMime"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HMime$.html"><span class="name">HMime</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Known MIME types.</p>
+    </li><li visbl="pub" name="tiscaf.HReqData" data-isabs="false">
+      <a id="HReqData:HReqData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HReqData$.html"><span class="name">HReqData</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HReqType" data-isabs="false">
+      <a id="HReqType:HReqType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HReqType$.html"><span class="name">HReqType</span></a><span class="result"> extends Enumeration</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Request method type.</p>
+    </li><li visbl="pub" name="tiscaf.HResponse" data-isabs="false">
+      <a id="HResponse:HResponse"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HResponse$.html"><span class="name">HResponse</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HStatus" data-isabs="false">
+      <a id="HStatus:HStatus"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HStatus$.html"><span class="name">HStatus</span></a><span class="result"> extends Enumeration</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Response status codes.</p>
+    </li><li visbl="pub" name="tiscaf.HTracking" data-isabs="false">
+      <a id="HTracking:HTracking"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HTracking$.html"><span class="name">HTracking</span></a><span class="result"> extends Enumeration</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HTree" data-isabs="false">
+      <a id="HTree:HTree"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HTree$.html"><span class="name">HTree</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HomeServer" data-isabs="false">
+      <a id="HomeServer:HomeServer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HomeServer$.html"><span class="name">HomeServer</span></a><span class="result"> extends HServer with App</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.HomeServerStop" data-isabs="false">
+      <a id="HomeServerStop:HomeServerStop"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HomeServerStop$.html"><span class="name">HomeServerStop</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.package#dummy" data-isabs="false">
+      <a id="dummy:Unit @scala.util.continuations.cpsParam[Unit,Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dummy</span><span class="result">: Unit @scala.util.continuations.cpsParam[Unit,Unit]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="tiscaf.package" class="extype" href="package$.html">package</a></dd><dt>Annotations</dt><dd>
+                <span class="name">@inline</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="tiscaf.let" data-isabs="false">
+      <a id="let:let"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="let/package.html"><span class="name">let</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.sync" data-isabs="false">
+      <a id="sync:sync"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="sync/package.html"><span class="name">sync</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="tiscaf.package#toDummy" data-isabs="false">
+      <a id="toDummy[T](⇒ T):T @scala.util.continuations.cpsParam[Unit,Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toDummy</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="code">code: ⇒ T</span>)</span><span class="result">: T @scala.util.continuations.cpsParam[Unit,Unit]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="tiscaf.package" class="extype" href="package$.html">package</a></dd><dt>Annotations</dt><dd>
+                <span class="name">@inline</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
