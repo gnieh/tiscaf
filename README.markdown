@@ -40,3 +40,9 @@ Upcoming Features and TODOs
 
  - suspendable computation - HLet computation may be interrupted at any moment and resumed later
  - SSL support - TODO
+
+Documentation
+-------------
+
+ - the API documentation is available [here](http://gnieh.github.com/tiscaf/api/),
+ - tutorials and examples may be found in the wiki pages.
