@@ -2,6 +2,13 @@ package tiscaf
 
 import java.util.Date
 
+/** This is the way an [[tiscaf.HLet]] accesses to the world. It provides
+ *  a way to access the request data, as well as a way to send response to
+ *  the client.
+ *
+ *  @note if the response is not chunked, nor buffered (e.g. gzipped), implementor
+ *  must set the response length explicitly.
+ */
 final class HTalk(data : HTalkData) {
 
   //----------------------------------------------------------------
@@ -9,9 +16,11 @@ final class HTalk(data : HTalkData) {
   //----------------------------------------------------------------
 
   // request
+  /** Request data. */
   val req : HReqData = HReqData(data)
 
   // is used both for request params decoding and generating output bytes from strings
+  /** Request parameters encoding and response encoding. */
   def encoding : String = data.app.encoding
 
   // setting status and response header
@@ -33,6 +42,8 @@ final class HTalk(data : HTalkData) {
   def write(s : String) : HTalk = write(bytes(s))
 
   // session
+
+  /** The current session */
   object ses extends scala.collection.mutable.Map[Any, Any] {
 
     // implementing mutable.Map

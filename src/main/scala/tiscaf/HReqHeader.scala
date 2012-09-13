@@ -1,57 +1,63 @@
 package tiscaf
 
+/** Contains the request header data:
+ *   - request method,
+ *   - host, port, ...
+ *   - sent headers.
+ */
 trait HReqHeaderData {
   def reqType : HReqType.Value
-  
-  def host    : Option[String]
-  def port    : Option[String]
-  
+
+  def host : Option[String]
+  def port : Option[String]
+
   def uriPath : String
-  def uriExt  : Option[String]
-  def query   : String
-  
-  def header(key : String): Option[String]
+  def uriExt : Option[String]
+  def query : String
+
+  def header(key : String) : Option[String]
   def headerKeys : scala.collection.Set[String]
-  
+
   def isPersistent : Boolean
-  
+
   def contentLength : Option[Long]
   def boundary : Option[String]
 }
 
+/** Request method type. */
 object HReqType extends Enumeration {
-  val Invalid    = Value("Invalid")
-  val Get        = Value("GET")
-  val PostData   = Value("POST/application/x-www-form-urlencoded")
+  val Invalid = Value("Invalid")
+  val Get = Value("GET")
+  val PostData = Value("POST/application/x-www-form-urlencoded")
   val PostOctets = Value("POST/application/octet-stream")
-  val PostMulti  = Value("POST/multipart/form-data")
-  val Delete     = Value("DELETE")
+  val PostMulti = Value("POST/multipart/form-data")
+  val Delete = Value("DELETE")
 }
 
-private class HAddress(val uriPath: String, val uriExt: Option[String], val query: String)
-private class HHostPort(val host: Option[String], val port: Option[String])
+private class HAddress(val uriPath : String, val uriExt : Option[String], val query : String)
+private class HHostPort(val host : Option[String], val port : Option[String])
 
 private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
 
-  lazy val reqType =  if (strings.isEmpty) HReqType.Invalid else parseMethod(strings.head)
-  
+  lazy val reqType = if (strings.isEmpty) HReqType.Invalid else parseMethod(strings.head)
+
   lazy val host = hostPort.host
   lazy val port = hostPort.port
-  
+
   // these three methods can rise exception but will not as far as can be called
   // when request header is valid
   lazy val uriPath : String = address.get.uriPath
-  lazy val uriExt  : Option[String] = address.get.uriExt
-  lazy val query   : String = address.get.query
-  
-  def header(key : String): Option[String] = pairs.get(key.toLowerCase)
+  lazy val uriExt : Option[String] = address.get.uriExt
+  lazy val query : String = address.get.query
+
+  def header(key : String) : Option[String] = pairs.get(key.toLowerCase)
   lazy val headerKeys : scala.collection.Set[String] = pairs.keySet
-  
+
   lazy val isPersistent = parsePersistence
 
-  lazy val contentLength: Option[Long] = try { Some(pairs("content-length").toLong) } catch { case _ => None }
+  lazy val contentLength : Option[Long] = try { Some(pairs("content-length").toLong) } catch { case _ => None }
   lazy val boundary = parseBoundary
-  
+
   /*
   def toText : String = reqType match {
     case HReqType.Invalid => "Invalid header"
@@ -69,40 +75,39 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
       "\n boundary: " + boundary + "\n"
   }
   */
-  
+
   //--------------------------
-  private lazy val strings    = unwrapStrings
+  private lazy val strings = unwrapStrings
   private lazy val pairs = fillInPairs
-  private lazy val address: Option[HAddress] = if (strings.isEmpty) None else {
+  private lazy val address : Option[HAddress] = if (strings.isEmpty) None else {
     val parts = strings.head.split(" ")
     if (parts.size != 3) None else Some(parseAddress(parts(1)))
   }
   private lazy val hostPort = parseHostPort
-  
+
   private def unwrapStrings : Seq[String] = {
     @scala.annotation.tailrec
-    def step(acc : List[String], from: Seq[String]): Seq[String] = if (from.isEmpty) acc else {
+    def step(acc : List[String], from : Seq[String]) : Seq[String] = if (from.isEmpty) acc else {
       val raw = from.head
       if (raw.startsWith("\t") || raw.startsWith(" ")) {
         if (acc.isEmpty) step(raw.trim :: acc, from.tail)
         else step((acc.head + " " + raw.trim) :: acc.tail, from.tail)
-      }
-      else step(raw.trim :: acc, from.tail)
-      
+      } else step(raw.trim :: acc, from.tail)
+
     }
     step(Nil, streamStrings).reverse
   }
-  
-  private def parseHostPort: HHostPort = pairs.get("host") match {
-    case None    => new HHostPort(None, None)
+
+  private def parseHostPort : HHostPort = pairs.get("host") match {
+    case None => new HHostPort(None, None)
     case Some(h) =>
       val hostParts = h.split(":")
-      new HHostPort(Some(hostParts(0)), {if (hostParts.length == 1) None else Some(hostParts(1))})
+      new HHostPort(Some(hostParts(0)), { if (hostParts.length == 1) None else Some(hostParts(1)) })
   }
-  
-  private def parseMethod(s: String): HReqType.Value = {
+
+  private def parseMethod(s : String) : HReqType.Value = {
     val parts = s.split(" ")
-    if (parts.length != 3 /* method uri protocol */) HReqType.Invalid else {
+    if (parts.length != 3 /* method uri protocol */ ) HReqType.Invalid else {
       parts(0).trim match {
         case "GET"    => HReqType.Get
         case "POST"   => parsePostMethod
@@ -111,8 +116,8 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
       }
     }
   }
-  
-  private def parseAddress(s: String): HAddress = {
+
+  private def parseAddress(s : String) : HAddress = {
     val parts = s.split("\\?")
     val query = if (parts.length == 2) parts(1) else ""
     val uri = {
@@ -125,41 +130,41 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
     else
       new HAddress(extParts(0), None, query)
   }
-  
+
   private def parsePostMethod : HReqType.Value = contentLength match {
-    case None     => HReqType.Invalid
+    case None => HReqType.Invalid
     case Some(le) => pairs.get("content-type") match {
-      case None           => HReqType.Invalid
+      case None => HReqType.Invalid
       case Some(contType) => contType.toLowerCase match {
         case da if (da.contains("application/x-www-form-urlencoded")) =>
-          HReqType.PostData 
+          HReqType.PostData
         case mu if (mu.contains("multipart/form-data")) =>
           contType.split(";").map(_.trim).find(_.toLowerCase.startsWith("boundary")) match {
-            case None      => HReqType.Invalid
+            case None => HReqType.Invalid
             case Some(bnd) => try {
               val aBoundary = Some(bnd.split("=")(1).trim) // to rise an exception
-              HReqType.PostMulti 
+              HReqType.PostMulti
             } catch { case _ => HReqType.Invalid }
           }
         case _ => HReqType.PostOctets // falling back to 
       }
     }
   }
-  
-  private def parseBoundary: Option[String] = reqType match {
+
+  private def parseBoundary : Option[String] = reqType match {
     case HReqType.PostMulti => pairs.get("content-type") match {
-      case None           => None
+      case None => None
       case Some(contType) => contType.split(";").map(_.trim).find(_.toLowerCase.startsWith("boundary")) match {
         case None      => None
         case Some(bnd) => try { Some(bnd.split("=")(1).trim) } catch { case _ => None }
-      }   
+      }
     }
     case _ => None
   }
-  
-  private def fillInPairs: Map[String, String] = {
+
+  private def fillInPairs : Map[String, String] = {
     @scala.annotation.tailrec
-    def step(acc : Map[String,String], from: Seq[String]): Map[String,String] = if (from.isEmpty) acc else {
+    def step(acc : Map[String, String], from : Seq[String]) : Map[String, String] = if (from.isEmpty) acc else {
       val s = from.head
       val idx = s.indexOf(":")
       if (idx < 0) step(acc + Pair(s.trim.toLowerCase, ""), from.tail)
@@ -167,8 +172,8 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
     }
     step(Map(), strings.tail) // skip first HTTP string
   }
-  
-  private def parsePersistence: Boolean = pairs.get("connection") match {
+
+  private def parsePersistence : Boolean = pairs.get("connection") match {
     case None      => false
     case Some(con) => con.toLowerCase.contains("keep-alive")
   }

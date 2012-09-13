@@ -3,7 +3,7 @@ package tiscaf
 object HTree {
   implicit def string2lay(aDir : String) = new HTree { override def dir = aDir }
 
-  def stub(text : String) : HLet[_] = new HLet[Nothing] {
+  def stub(text : String) : HLet[_] = new HSimpleLet {
     def act(tk : HTalk) = {
       val out = tk.bytes(text)
       tk.setContentLength(out.length) // if not buffered
@@ -13,6 +13,35 @@ object HTree {
   }
 }
 
+/** If your application has (at least partly) tree-like structure
+ *  (URI nodes correspond to request handlers), you can assign handlers
+ *  to tree nodes in eyes-friendly manner:
+ *  {{{
+ *  object MngApp extends HApp {
+ *
+ *    def resolve(req: HReqHeaderData): Option[HLet] = admRoot.resolve(req.uriPath)
+ *
+ *    private lazy val bookkeepers =
+ *      "bookkeeper" += (
+ *        "new"  ! stub("new bookkeeper - not implemented yet"),
+ *        "list" ! adm.bk.ListBkLet
+ *      )
+ *
+ *    private lazy val admRoot =
+ *      "adm" += ( // adm root hasn't a handler. If has: "adm" ! adm.RootLet += (
+ *        "in" ! adm.InLet, // "domain.com/adm/in"
+ *        "menu" ! adm.MenuLet,
+ *        "manager" += (
+ *          "new"  ! adm.man.NewManLet,
+ *          "list" ! adm.man.ListManLet
+ *        ),
+ *        bookkeepers
+ *      )
+ *
+ *    // ...
+ *  }
+ *  }}}
+ */
 trait HTree { self =>
 
   def dir : String = ""

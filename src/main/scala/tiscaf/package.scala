@@ -1,8 +1,8 @@
 
 import scala.util.continuations._
 
-/** @author Lucas Satabin
- *
+/** The tiscaf server is a lightweight and easy way to integrate an HTTP
+ *  server to your application.
  */
 package object tiscaf {
 

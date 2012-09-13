@@ -11,7 +11,8 @@ object TiscafProject extends Build {
     crossScalaVersions := Seq("2.9.2"),
     autoCompilerPlugins := true,
     addContinuations,
-    scalacOptions += "-P:continuations:enable") settings (publishSettings : _*))
+    scalacOptions += "-P:continuations:enable")
+      settings (publishSettings : _*))
 
   def publishSettings : Seq[Setting[_]] = Seq(
     // If we want on maven central, we need to be in maven style.

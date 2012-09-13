@@ -2,57 +2,12 @@ package tiscaf
 
 private trait HData // ant
 
+/** Response status codes.
+ */
 object HStatus extends Enumeration {
-  val
-    /* 100 */
-    Continue,
-    SwitchingProtocol,
-    /* 200*/
-    OK,
-    Created,
-    Accepted,
-    NotAuthoritativeInformation,
-    NoContent,
-    ResetContent,
-    PartialContent,
-    /* 300 */
-    MultipleChoices,
-    MovedPermanently,
-    Found,
-    SeeOther,
-    NotModified,
-    UseProxy,
-    Unused306,
-    TemporaryRedirect,
-    /* 400 */
-    BadRequest,
-    Unauthorized,
-    PaymentRequired,
-    Forbidden,
-    NotFound,
-    MethodNotAllowed,
-    NotAcceptable,
-    ProxyAuthentificationRequired,
-    RequestTimeout,
-    Conflict,
-    Gone,
-    LengthRequired,
-    PreconditionFailed,
-    RequestEntityTooLarge,
-    RequestUriTooLong,
-    UnsupportedMediaType,
-    RequestRangeNotSatisfiable,
-    ExpectationFailed,
-    UpgradeRequired,
-    /* 500 */
-    InternalServerError,
-    NotImplemented,
-    BadGateway,
-    ServiceUnavailable,
-    GatewayTimeout,
-    VersionNotSupported = Value
-  
-  val strings = Map (
+  val /* 100 */ Continue, SwitchingProtocol, /* 200*/ OK, Created, Accepted, NotAuthoritativeInformation, NoContent, ResetContent, PartialContent, /* 300 */ MultipleChoices, MovedPermanently, Found, SeeOther, NotModified, UseProxy, Unused306, TemporaryRedirect, /* 400 */ BadRequest, Unauthorized, PaymentRequired, Forbidden, NotFound, MethodNotAllowed, NotAcceptable, ProxyAuthentificationRequired, RequestTimeout, Conflict, Gone, LengthRequired, PreconditionFailed, RequestEntityTooLarge, RequestUriTooLong, UnsupportedMediaType, RequestRangeNotSatisfiable, ExpectationFailed, UpgradeRequired, /* 500 */ InternalServerError, NotImplemented, BadGateway, ServiceUnavailable, GatewayTimeout, VersionNotSupported = Value
+
+  val strings = Map(
     Continue -> ("100", "Continue"),
     SwitchingProtocol -> ("101", "Switching Protocol"),
     /* 200*/
@@ -98,15 +53,14 @@ object HStatus extends Enumeration {
     BadGateway -> ("502", "Bad Gateway"),
     ServiceUnavailable -> ("503", "Service Unavailable"),
     GatewayTimeout -> ("504", "Gateway Timeout"),
-    VersionNotSupported -> ("505", "Version Not Supported")
-  )
-  
-  def asString(v: Value, msg: String) = strings(v)._1 + " " + msg 
-  def asString(v: Value) = { val s = strings(v); s._1 + " " + s._2 }
+    VersionNotSupported -> ("505", "Version Not Supported"))
+
+  def asString(v : Value, msg : String) = strings(v)._1 + " " + msg
+  def asString(v : Value) = { val s = strings(v); s._1 + " " + s._2 }
 }
 
 protected object HHeaderKeys {
-  
+
   val list = List(
     "Server",
     "Date",
@@ -120,29 +74,30 @@ protected object HHeaderKeys {
     "Content-Length",
     "Content-Range",
     "Content-Type",
-    "Last-Modified"
-  )
+    "Last-Modified")
 }
 
-
+/** Known MIME types.
+ */
 object HMime { // ANLI add more constants
-  
-  def apply(ext: String) = exts(ext.toLowerCase)
-  
+
+  def apply(ext : String) = exts(ext.toLowerCase)
+
   def html = apply("html")
-  def txt  = apply("txt")
-  def xml  = apply("xml")
-  def png  = apply("png")
+  def txt = apply("txt")
+  def xml = apply("xml")
+  def png = apply("png")
   def jpeg = apply("jpeg")
-  def gif  = apply("gif")
-  def js   = apply("js")
+  def gif = apply("gif")
+  def js = apply("js")
   def json = apply("json")
-  def css  = apply("css")
-  def ico  = apply("ico")
-  def pdf  = apply("pdf")
-  def zip  = apply("zip")
-  def svg  = apply("svg")
-  
+  def css = apply("css")
+  def ico = apply("ico")
+  def pdf = apply("pdf")
+  def zip = apply("zip")
+  def svg = apply("svg")
+
+  /** Mime types from extensions. */
   val exts = Map(
     "html" -> "text/html",
     "htm" -> "text/html",
@@ -221,9 +176,9 @@ object HMime { // ANLI add more constants
     "odp" -> "application/vnd.oasis.opendocument.presentation",
     "ods" -> "application/vnd.oasis.opendocument.spreadsheet",
     "odt" -> "application/vnd.oasis.opendocument.text",
-    "abw" -> "application/x-abiword"
-  )
-  
+    "abw" -> "application/x-abiword").withDefaultValue("text/plain")
+
+  /** Gzippable mime types. */
   val gzipable = List(
     "text/html",
     "application/x-javascript",
@@ -240,6 +195,5 @@ object HMime { // ANLI add more constants
     "text/x-chdr",
     "text/x-haskell",
     "text/x-java",
-    "text/x-python"
-  )
+    "text/x-python")
 }
