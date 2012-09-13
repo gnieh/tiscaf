@@ -1,6 +1,6 @@
 package benchmark
 
-import zgs.httpd._
+import tiscaf._
 
 object ServerOk extends HServer {
 
