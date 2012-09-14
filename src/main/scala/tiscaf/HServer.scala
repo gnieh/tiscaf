@@ -56,7 +56,9 @@ trait HServer {
 
   // override if you want more elaborated shutdown procedure (and replace tiscaf.HStop)
   protected def startStopListener: Unit = sync.Sync.spawnNamed("StopListener") {
-    val serverSocket = new java.net.ServerSocket(stopPort)
+    // only bind to localhost for stop message
+    val serverSocket =
+      new java.net.ServerSocket(stopPort, 0, java.net.InetAddress.getLocalHost)
     println(name + " stop listener is listening to port " + stopPort)
     val dataSocket = serverSocket.accept
     val ar = new Array[Byte](256)
