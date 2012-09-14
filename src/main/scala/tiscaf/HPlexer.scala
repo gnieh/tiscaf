@@ -9,10 +9,10 @@ private trait HPlexer {
 
   //---------------------- to implement ------------------------------
 
-  def timeoutMillis : Long
-  def tcpNoDelay : Boolean
-  def onError(e : Throwable) : Unit
-  def ssl : Option[HSslData]
+  def timeoutMillis: Long
+  def tcpNoDelay: Boolean
+  def onError(e: Throwable): Unit
+  def ssl: Option[HSsl]
 
   //---------------------- SPI ------------------------------------------
 
@@ -23,7 +23,7 @@ private trait HPlexer {
     }
   }
 
-  final def stop : Unit = synchronized { // close once only 
+  final def stop: Unit = synchronized { // close once only 
     if (isWorking.get) {
       isWorking.set(false)
       selector.close
@@ -32,7 +32,7 @@ private trait HPlexer {
     }
   }
 
-  final def addListener(peerFactory : SelectionKey => HPeer, port : Int) : Unit = Sync.spawnNamed("Acceptor-" + port) {
+  final def addListener(peerFactory: SelectionKey => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
     try {
       val serverChannel = ServerSocketChannel.open
       servers += serverChannel
@@ -50,18 +50,48 @@ private trait HPlexer {
           needToRead(key)
         }
       } catch {
-        case e : java.nio.channels.AsynchronousCloseException =>
+        case e: java.nio.channels.AsynchronousCloseException =>
         case e => onError(e)
       }
     } catch {
-      case e : java.nio.channels.AsynchronousCloseException =>
+      case e: java.nio.channels.AsynchronousCloseException =>
       case e => throw e
     }
   }
 
-  final def needToClose(key : SelectionKey) : Unit = { wakeQu.put(key, PeerWant.Close); selector.wakeup }
-  final def needToWrite(key : SelectionKey) : Unit = { wakeQu.put(key, PeerWant.Write); selector.wakeup }
-  final def needToRead(key : SelectionKey) : Unit = { wakeQu.put(key, PeerWant.Read); selector.wakeup }
+  final def addSslListener(peerFactory: SelectionKey => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
+    try {
+      // TODO implement it (with SSL sessions)
+      val serverChannel = ServerSocketChannel.open
+      servers += serverChannel
+      serverChannel.configureBlocking(true)
+      serverChannel.socket.bind(new InetSocketAddress(port))
+
+      while (isWorking.get) try {
+        val socketCannel = serverChannel.accept
+        val remoteIp = socketCannel.socket.getInetAddress.getHostAddress
+        val remotePort = socketCannel.socket.getPort
+        socketCannel.socket.setTcpNoDelay(tcpNoDelay)
+        socketCannel.configureBlocking(false)
+        keySetGuard.synchronized {
+          selector.wakeup
+          val key = socketCannel.register(selector, 0)
+          key.attach(new HKeyData(peerFactory(key)))
+          needToRead(key)
+        }
+      } catch {
+        case e: java.nio.channels.AsynchronousCloseException =>
+        case e => onError(e)
+      }
+    } catch {
+      case e: java.nio.channels.AsynchronousCloseException =>
+      case e => throw e
+    }
+  }
+
+  final def needToClose(key: SelectionKey): Unit = { wakeQu.put(key, PeerWant.Close); selector.wakeup }
+  final def needToWrite(key: SelectionKey): Unit = { wakeQu.put(key, PeerWant.Write); selector.wakeup }
+  final def needToRead(key: SelectionKey): Unit = { wakeQu.put(key, PeerWant.Read); selector.wakeup }
 
   //------------------------- internals --------------------------------------
 
@@ -76,9 +106,9 @@ private trait HPlexer {
   type KeyWant = Pair[SelectionKey, PeerWant.Value]
   private val wakeQu = new SyncQu[KeyWant]
 
-  private def processWakeQu : Unit = {
+  private def processWakeQu: Unit = {
     @scala.annotation.tailrec
-    def step : Unit = wakeQu.takeOpt match {
+    def step: Unit = wakeQu.takeOpt match {
       case Some(kw) =>
         kw._2 match {
           case PeerWant.Write => if (kw._1.isValid) kw._1.interestOps(SelectionKey.OP_WRITE)
@@ -96,7 +126,7 @@ private trait HPlexer {
   private val lastExpire = new SyncField[Long]
   lastExpire.set(System.currentTimeMillis)
 
-  private def processExpiration : Unit = try {
+  private def processExpiration: Unit = try {
     val now = System.currentTimeMillis
     if (now > lastExpire.get + expireDelta) {
       val timeX = now - timeoutMillis
@@ -111,7 +141,7 @@ private trait HPlexer {
   } catch { case e => onError(e) }
 
   // main multiplexer loop
-  private def plex : Unit = while (isWorking.get) try {
+  private def plex: Unit = while (isWorking.get) try {
 
     processWakeQu // these operations change keys' states only
     keySetGuard.synchronized { processExpiration } // these operation change keySet content
@@ -135,7 +165,7 @@ private trait HPlexer {
 
 }
 
-private class HKeyData(val peer : HPeer) {
+private class HKeyData(val peer: HPeer) {
   var stamp = System.currentTimeMillis
 }
 
