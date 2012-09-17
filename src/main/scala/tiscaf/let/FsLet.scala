@@ -3,24 +3,39 @@ package let
 
 import java.io.File
 
+/** Simply serve static content from the file system. */
 trait FsLet extends HLet[Nothing] {
 
   //----------------- to implement -------------------------
 
-  protected def dirRoot : String // will be mounted to uriRoot
+  /** The root directory that will be mounted to `uriRoot`. */
+  protected def dirRoot: String // will be mounted to uriRoot
 
   //----------------- to override -------------------------
 
-  protected def uriRoot : String = "" // say, "myKit/theDir"
-  protected def indexes : Seq[String] = Nil // say, List("index.html", "index.htm")
-  protected def allowLs : Boolean = false
-  protected def bufSize : Int = 4096
-  protected def plainAsDefault : Boolean = false
+  /** The root URI. */
+  protected def uriRoot: String = "" // say, "myKit/theDir"
+
+  /** Index files if no file if given. By default, none. */
+  protected def indexes: Seq[String] = Nil // say, List("index.html", "index.htm")
+
+  /** Is directory listing allowed. By default, `false`. */
+  protected def allowLs: Boolean = false
+
+  /** Buffer size. By default `4096`. */
+  protected def bufSize: Int = 4096
+
+  /** Indicates whether the default mime type is `text/plain` if none could be
+   *  recognized by the server (from the file extension).
+   *  If this is `false`, the default mime type will be `application/octet-stream`.
+   *  By default, `false`.
+   */
+  protected def plainAsDefault: Boolean = false
 
   //-------------------- init ------------------------------
 
   // force trailing slash
-  private val theDirRoot : String = {
+  private val theDirRoot: String = {
     val tmp = (new File(dirRoot)).getCanonicalPath.replace("\\\\", "/")
     if (tmp.endsWith("/")) tmp else tmp + "/"
   }
@@ -32,7 +47,7 @@ trait FsLet extends HLet[Nothing] {
 
   //------------------ HLet implemented --------------------
 
-  def act(tk : HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
+  def act(tk: HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
     val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
 
     val pathRest = tk.req.uriPath.substring(theUriRoot.length)
@@ -55,5 +70,5 @@ trait FsLet extends HLet[Nothing] {
     } else notFound(tk)
   } else notFound(tk)
 
-  private def notFound(tk : HTalk) = new ErrLet(HStatus.NotFound) act (tk)
+  private def notFound(tk: HTalk) = new ErrLet(HStatus.NotFound) act (tk)
 }

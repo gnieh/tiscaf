@@ -184,7 +184,8 @@ private trait HSslPeer extends HPeer {
 
           netBuffer.flip
           var read = 0
-          while (netBuffer.hasRemaining) {
+          var continue = true
+          while (continue && netBuffer.hasRemaining) {
             val res = engine.unwrap(netBuffer, appBuffer)
             read += res.bytesProduced
             import SSLEngineResult.Status
@@ -193,6 +194,8 @@ private trait HSslPeer extends HPeer {
               netBuffer.limit(netBuffer.capacity)
               channel.read(netBuffer)
               netBuffer.flip
+            } else if (res.getStatus == Status.CLOSED) {
+              continue = false
             }
           }
 
@@ -225,13 +228,17 @@ private trait HSslPeer extends HPeer {
       appBuffer.put(ar, offset, length)
       appBuffer.flip
 
-      while (appBuffer.hasRemaining) {
+      var continue = true
+
+      while (continue && appBuffer.hasRemaining) {
         val res = engine.wrap(appBuffer, netBuffer)
         import SSLEngineResult.Status
         if (res.getStatus == Status.BUFFER_UNDERFLOW) {
           appBuffer.position(appBuffer.limit)
           appBuffer.limit(appBuffer.capacity)
           appBuffer.flip
+        } else if (res.getStatus == Status.CLOSED) {
+          continue = false
         }
       }
 

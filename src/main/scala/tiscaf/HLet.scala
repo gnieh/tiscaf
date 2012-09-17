@@ -20,8 +20,12 @@ trait HLet[T] {
 
   //------------------- to implement ------------------------
 
-  /** This method contains the actual (suspendable) computation. */
-  def act(tal: HTalk): Any @suspendable
+  /** This method contains the actual (suspendable) computation.
+   *  The given `talk` parameter contains the methods to access the request and
+   *  session data, as well as the method to send the response to the client.
+   *  @see [[tiscaf.HTalk]]
+   */
+  def act(talk: HTalk): Any @suspendable
 
   //-------------------- to override ------------------------
 
@@ -83,7 +87,7 @@ trait HLet[T] {
 
   /** Called when the computation is suspended.
    *  It may be used to store this HLet and resume it later.
-   *  @note Implementors must take care of synchronization as `HLet`s
+   *  @note Implementors must take care of synchronization as different `HLet`s
    *   may be called concurrently.
    */
   protected[this] def onSuspend {} // called when the execution of this HLet is suspended
@@ -94,6 +98,8 @@ trait HLet[T] {
 
   /** Resumes the computation of this `HLet` if not already terminated.
    *  Caller pass values that may then be used in the rest of the computation.
+   *  Computation is asynchronously resumed and call to this method returns
+   *  immediately.
    */
   final def resume(v: T) = kont match {
     case Some(k) =>
@@ -138,7 +144,8 @@ trait HLet[T] {
   }
 }
 
-/** A simple [[tiscaf.HLet]] that will not be suspended.
+/** A simple [[tiscaf.HLet]] that will not be suspended or suspended and resumed
+ *  without any parameter passed.
  *  Most of the time, one wants to implement this one instead of [[tiscaf.HLet]].
  */
-trait HSimpleLet extends HLet[Nothing]
+trait HSimpleLet extends HLet[Unit]

@@ -13,7 +13,7 @@ object SSLServer extends App with HServer {
       val ks = KeyStore.getInstance("JKS")
       val stream = getClass.getResourceAsStream("/test-keystore.jks")
       try {
-        ks.load(stream, passphrase.toCharArray)
+        ks.load(stream, null)
       } finally {
         if (stream != null)
           stream.close

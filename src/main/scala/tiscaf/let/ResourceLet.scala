@@ -1,19 +1,23 @@
 package tiscaf
 package let
 
+/** Serve static resources that are present in the classpath*/
 trait ResourceLet extends HLet[Nothing] {
 
   //----------------- to implement -------------------------
 
-  protected def dirRoot : String // will be mounted to uriRoot
+  /** The root directory that will be mounted to the root URI. */
+  protected def dirRoot: String // will be mounted to uriRoot
 
   //----------------- to override -------------------------
 
-  // Following Java convention: returns null if resource is not found.
-  // We must return null for direcories in jars. Official API doesn't provide any
-  // way to differentiate files and directories in jars. But stream.available()
-  // rises an error for directories.
-  protected def getResource(path : String) : java.io.InputStream = {
+  /** Returns the resource associated to the given path.
+   *  Following Java convention: returns null if resource is not found.
+   *  We must return null for directories in jars. Official API doesn't provide any
+   *  way to differentiate files and directories in jars. But stream.available()
+   *  rises an error for directories.
+   */
+  protected def getResource(path: String): java.io.InputStream = {
     val url = this.getClass.getResource(path)
     if (url == null) null else url.getProtocol match {
       case "jar"  => val is = url.openStream; try { is.available; is } catch { case _ => null }
@@ -21,15 +25,27 @@ trait ResourceLet extends HLet[Nothing] {
       case _      => null
     }
   }
-  protected def uriRoot : String = "" // say, "myKit/theDir"
-  protected def indexes : Seq[String] = Nil // say, List("index.html", "index.htm")
-  protected def bufSize : Int = 4096
-  protected def plainAsDefault : Boolean = false
+
+  /** The root URI. */
+  protected def uriRoot: String = "" // say, "myKit/theDir"
+
+  /** Index files if no file if given. By default, none. */
+  protected def indexes: Seq[String] = Nil // say, List("index.html", "index.htm")
+
+  /** Buffer size. By default `4096`. */
+  protected def bufSize: Int = 4096
+
+  /** Indicates whether the default mime type is `text/plain` if none could be
+   *  recognized by the server (from the file extension).
+   *  If this is `false`, the default mime type will be `application/octet-stream`.
+   *  By default, `false`.
+   */
+  protected def plainAsDefault: Boolean = false
 
   //-------------------- init ------------------------------
 
-  // starts with anf ends with "/"
-  private val theDirRoot : String = "/" + dirRoot + { if (dirRoot.endsWith("/")) "" else "/" }
+  // starts and ends with "/"
+  private val theDirRoot: String = "/" + dirRoot + { if (dirRoot.endsWith("/")) "" else "/" }
 
   private val theUriRoot = { // remove leading and trailing "/"
     val anUri = uriRoot
@@ -37,7 +53,7 @@ trait ResourceLet extends HLet[Nothing] {
     if (tmp.endsWith("/")) tmp.substring(0, tmp.length - 1) else tmp
   }
 
-  private def resolvePath(tk : HTalk) : String = {
+  private def resolvePath(tk: HTalk): String = {
     val pathRest = tk.req.uriPath.substring(theUriRoot.length)
     def path = theDirRoot + { if (pathRest.startsWith("/")) pathRest.substring(1) else pathRest }
     new java.io.File(path).getCanonicalPath
@@ -45,7 +61,7 @@ trait ResourceLet extends HLet[Nothing] {
 
   //------------------ HLet implemented --------------------
 
-  def act(tk : HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
+  def act(tk: HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
     val path = resolvePath(tk)
 
     val fullPathAndStream = ("" +: indexes)
@@ -64,7 +80,7 @@ trait ResourceLet extends HLet[Nothing] {
       val is = fullPathAndStream.get._2
 
       @scala.annotation.tailrec
-      def step(wasRead : Int) : Unit = if (wasRead > 0) {
+      def step(wasRead: Int): Unit = if (wasRead > 0) {
         tk.write(ar, 0, wasRead)
         step(is.read(ar))
       }
@@ -73,5 +89,5 @@ trait ResourceLet extends HLet[Nothing] {
     }
   } else notFound(tk)
 
-  private def notFound(tk : HTalk) = new ErrLet(HStatus.NotFound, tk.req.uriPath) act (tk)
+  private def notFound(tk: HTalk) = new ErrLet(HStatus.NotFound, tk.req.uriPath) act (tk)
 }

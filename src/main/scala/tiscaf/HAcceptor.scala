@@ -10,16 +10,16 @@ private object HReqState extends Enumeration {
 
 private class HConnData {
   import scala.collection.{ mutable => mute }
-  var reqState : HReqState.Value = HReqState.WaitsForHeader
-  var tail : Array[Byte] = new Array[Byte](0)
-  var acceptedTotalLength : Long = 0L
-  var header : Option[HReqHeader] = None
-  var parMap : mute.Map[String, Seq[String]] = new mute.HashMap[String, Seq[String]]()
-  var appLet : Option[(HApp, HLet[_])] = None
-  var octetStream : Option[Array[Byte]] = None
-  var parts : Option[HPartData] = None
+  var reqState: HReqState.Value = HReqState.WaitsForHeader
+  var tail: Array[Byte] = new Array[Byte](0)
+  var acceptedTotalLength: Long = 0L
+  var header: Option[HReqHeader] = None
+  var parMap: mute.Map[String, Seq[String]] = new mute.HashMap[String, Seq[String]]()
+  var appLet: Option[(HApp, HLet[_])] = None
+  var octetStream: Option[Array[Byte]] = None
+  var parts: Option[HPartData] = None
 
-  def toTalkData(aWriter : HWriter) : HTalkData = new HTalkData {
+  def toTalkData(aWriter: HWriter): HTalkData = new HTalkData {
     def header = HConnData.this.header.get
     def parMap = Map[String, Seq[String]]() ++ HConnData.this.parMap
     def app = HConnData.this.appLet.get._1
@@ -27,7 +27,7 @@ private class HConnData {
     def writer = aWriter
   }
 
-  def reset : Unit = {
+  def reset: Unit = {
     reqState = HReqState.WaitsForHeader
     tail = new Array[Byte](0)
     acceptedTotalLength = 0L
@@ -40,25 +40,25 @@ private class HConnData {
 }
 
 private trait HTalkData {
-  def header : HReqHeader
-  def parMap : Map[String, Seq[String]]
-  def app : HApp
-  def octets : Option[Array[Byte]]
-  def writer : HWriter
+  def header: HReqHeader
+  def parMap: Map[String, Seq[String]]
+  def app: HApp
+  def octets: Option[Array[Byte]]
+  def writer: HWriter
 
   def aliveReq = try { header.isPersistent } catch { case _ => false }
 }
 
 private class HAcceptor(
-    val writer : HWriter,
-    apps : Seq[HApp],
-    connectionTimeout : Int,
-    onError : Throwable => Unit,
-    maxPostDataLength : Int) {
+    val writer: HWriter,
+    apps: Seq[HApp],
+    connectionTimeout: Int,
+    onError: Throwable => Unit,
+    maxPostDataLength: Int) {
 
   val in = new HConnData
 
-  def accept(bytes : Array[Byte]) : Unit = {
+  def accept(bytes: Array[Byte]): Unit = {
     in.tail = in.tail ++ bytes
 
     in.reqState match {
@@ -72,9 +72,9 @@ private class HAcceptor(
 
   private def maxHeaderLength = 8192 // ANLI to config?
 
-  private def inHeader : Unit = {
+  private def inHeader: Unit = {
     val till = in.tail.length - 4
-    def findEol(start : Int) : Option[Int] = if (till < start) None else (start to till).find { i =>
+    def findEol(start: Int): Option[Int] = if (till < start) None else (start to till).find { i =>
       in.tail(i) == 13 &&
         in.tail(i + 1) == 10 &&
         in.tail(i + 2) == 13 &&
@@ -100,7 +100,7 @@ private class HAcceptor(
   }
 
   //post, form data
-  private def inData : Unit = {
+  private def inData: Unit = {
     val length = in.header.get.contentLength.get.toInt
     if (length > maxPostDataLength) in.reqState = HReqState.IsInvalid
     else if (length > in.tail.length) in.reqState = HReqState.WaitsForData
@@ -111,7 +111,7 @@ private class HAcceptor(
   }
 
   // post, unknown content type, falling back to octet mode
-  private def inOctets : Unit = {
+  private def inOctets: Unit = {
     val contentLength = in.header.get.contentLength.get.toInt
     if (contentLength + in.tail.length > maxPostDataLength) in.reqState = HReqState.IsInvalid
     else {
@@ -126,7 +126,7 @@ private class HAcceptor(
   }
 
   //---------------- post, multipart
-  private def inParts : Unit = {
+  private def inParts: Unit = {
     resolveAppLet
     in.appLet.get._2.partsAcceptor(in.header.get) match {
       case None => in.reqState = HReqState.IsInvalid
@@ -157,7 +157,7 @@ private class HAcceptor(
   }
 
   // used both for query string and post data
-  private def parseParams(s : String) : Unit = {
+  private def parseParams(s: String): Unit = {
     def newPairs = s.split("&")
       .filter(_.length >= 2)
       .map(_.split("="))
@@ -170,7 +170,7 @@ private class HAcceptor(
     }
   }
 
-  def talk : PeerWant.Value @suspendable = {
+  def talk: PeerWant.Value @suspendable = {
     val (app, thelet) = in.appLet.get
     val tk = new HTalk(in.toTalkData(writer))
 
@@ -199,7 +199,7 @@ private class HAcceptor(
           } // connection can be closed here...
           catch {
             case _ => // ...and "header is already sent" will be arised; don't report it.
-              dummy
+              ()
           }
       }
     }
@@ -207,7 +207,7 @@ private class HAcceptor(
     tk.close
   }
 
-  def resolveAppLet : Unit = in.appLet match {
+  def resolveAppLet: Unit = in.appLet match {
     case None =>
       val req = HReqData(in.toTalkData(writer))
       in.appLet = Some(HResolver.resolve(apps, req))

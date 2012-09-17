@@ -56,7 +56,10 @@ trait HServer {
   /** Returns the maximum upload size allowed. */
   protected def maxPostDataLength: Int = 65536 // for POST other than multipart/form-data
 
-  // override if you want more elaborated shutdown procedure (and replace tiscaf.HStop)
+  /** Starts the stop listener.
+   *  Override if you want more elaborated shutdown procedure
+   *  (and replace tiscaf.HStop)
+   */
   protected def startStopListener: Unit = sync.Sync.spawnNamed("StopListener") {
     // only bind to localhost for stop message
     val serverSocket =

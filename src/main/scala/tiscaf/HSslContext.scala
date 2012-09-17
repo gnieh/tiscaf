@@ -7,19 +7,19 @@ import java.nio._
 
 import scala.collection.{ mutable => mute }
 
-/** tiscaf SSL engine. It manages the session cache as well as SSL settings. */
+/** tiscaf SSL context. It manages the session cache as well as SSL settings. */
 trait HSslContext {
 
   //---------------------- to implement ------------------------------
 
   /** SSL ports. */
-  private[tiscaf] def port: Int
+  def port: Int
 
   /** Keystore passphrase. */
-  private[tiscaf] def passphrase: String
+  def passphrase: String
 
   /** Keystore containing server certificate and CA certificate(s). */
-  private[tiscaf] def keystore: KeyStore
+  def keystore: KeyStore
 
   //---------------------- to override ------------------------------
 
