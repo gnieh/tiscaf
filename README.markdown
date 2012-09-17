@@ -27,7 +27,7 @@ Features
  - dispatching - requests dispatching is limited with your imagination only.
  - multiport - listening to multiple ports is possible.
  - static content - file system and in-jar resources retrieving is supported out of the box (with files/directories browsing).
- - connections - persistent connections are supported.
+ - connections - persistent and SSL/TLS connections are supported.
  - output - raw (content-length is known), buffered, gzipped (as a case of buffered), chunked - all modes are supported.
  - methods - POST/urlencoded, POST/multipart (with falling POST back to octets), GET and DELETE methods are supported.
  - sessions - via URI path extensions or cookies are supported.
@@ -39,7 +39,6 @@ Upcoming Features and TODOs
 ---------------------------
 
  - suspendable computation - HLet computation may be interrupted at any moment and resumed later
- - SSL support - TODO
 
 Documentation
 -------------
