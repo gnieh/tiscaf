@@ -1,5 +1,7 @@
 package tiscaf
 
+import javax.net.ssl.SSLEngine
+
 /** A server provides:
  *   - few common settings,
  *   - list of [[tiscaf.HApp]]lications,
@@ -68,7 +70,7 @@ trait HServer {
   }
 
   /** Returns the SSL settings if any. */
-  def ssl: Option[HSsl] = None
+  def ssl: List[HSslContext] = Nil
 
   //-------------------------- user API ---------------------------------
 
@@ -78,11 +80,7 @@ trait HServer {
       plexer.start
       ports.foreach { port => plexer.addListener(peerFactory, port) }
       // listen to SSL ports if any configured
-      ssl match {
-        case Some(sslData) =>
-          sslData.ports.foreach { port => plexer.addSslListener(peerFactory, port) }
-        case None => // just do nothing
-      }
+      ssl.foreach { ssl => plexer.addSslListener(peerFactory, ssl) }
       startStopListener
       isStopped.set(false)
       println(name + " server was started on port(s) " + ports.toSeq.sortBy(x => x).mkString(", "))
@@ -119,19 +117,42 @@ trait HServer {
   import java.nio.channels.SelectionKey
 
   // key place
-  private def peerFactory(aKey: SelectionKey): HPeer = new HPeer { self =>
+  private def peerFactory(aKey: SelectionKey, engine: Option[SSLEngine]): HPeer =
+    engine match {
+      case Some(sslEngine) =>
+        // SSL connection
+        new HSslPeer { self =>
 
-    def plexer: HPlexer = HServer.this.plexer
-    def key: SelectionKey = aKey
+          def plexer: HPlexer = HServer.this.plexer
+          def key: SelectionKey = aKey
 
-    def bufferSize: Int = HServer.this.bufferSize
+          def bufferSize: Int = session.getApplicationBufferSize
 
-    def onError(e: Throwable): Unit = HServer.this.onError(e)
+          def onError(e: Throwable): Unit = HServer.this.onError(e)
 
-    val acceptor =
-      new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)
+          def engine = sslEngine
 
-    def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
-  }
+          val acceptor =
+            new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)
+
+          def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
+        }
+      case None =>
+        // non SSL connection
+        new HSimplePeer { self =>
+
+          def plexer: HPlexer = HServer.this.plexer
+          def key: SelectionKey = aKey
+
+          def bufferSize: Int = HServer.this.bufferSize
+
+          def onError(e: Throwable): Unit = HServer.this.onError(e)
+
+          val acceptor =
+            new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)
+
+          def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
+        }
+    }
 
 }

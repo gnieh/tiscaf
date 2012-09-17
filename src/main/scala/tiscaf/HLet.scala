@@ -21,7 +21,7 @@ trait HLet[T] {
   //------------------- to implement ------------------------
 
   /** This method contains the actual (suspendable) computation. */
-  def act(tal : HTalk) : Any @suspendable
+  def act(tal: HTalk): Any @suspendable
 
   //-------------------- to override ------------------------
 
@@ -79,7 +79,7 @@ trait HLet[T] {
    *  }
    *  }}}
    */
-  def partsAcceptor(reqInfo : HReqHeaderData) : Option[HPartsAcceptor] = None // for multipart requests
+  def partsAcceptor(reqInfo: HReqHeaderData): Option[HPartsAcceptor] = None // for multipart requests
 
   /** Called when the computation is suspended.
    *  It may be used to store this HLet and resume it later.
@@ -90,12 +90,12 @@ trait HLet[T] {
 
   //------------------------ few helpers --------------------
 
-  private[this] var kont : Option[T => Unit] = None
+  private[this] var kont: Option[T => Unit] = None
 
   /** Resumes the computation of this `HLet` if not already terminated.
    *  Caller pass values that may then be used in the rest of the computation.
    */
-  final def resume(v : T) = kont match {
+  final def resume(v: T) = kont match {
     case Some(k) =>
       HLet.exe.submit(new Runnable {
         def run() {
@@ -108,27 +108,27 @@ trait HLet[T] {
   /** Suspends the computation of this `HLet`. Computation may then
    *  be resumed later.
    */
-  final protected[this] def suspend = shift { k : (T => Unit) =>
+  final protected[this] def suspend = shift { k: (T => Unit) =>
     onSuspend
     kont = Some(k)
   }
 
   /** Answers with an error response with the given code and message. */
-  protected def err(status : HStatus.Value, msg : String, tk : HTalk) = new let.ErrLet(status, msg) act (tk)
+  protected def err(status: HStatus.Value, msg: String, tk: HTalk) = new let.ErrLet(status, msg) act (tk)
 
   /** Answers with an error response with the given code. */
-  protected def err(status : HStatus.Value, tk : HTalk) = new let.ErrLet(status) act (tk)
+  protected def err(status: HStatus.Value, tk: HTalk) = new let.ErrLet(status) act (tk)
 
   /** Answers with an 404 error message. */
-  protected def e404(tk : HTalk) = err(HStatus.NotFound, tk)
+  protected def e404(tk: HTalk) = err(HStatus.NotFound, tk)
 
   /** Redirects the client to the given URI. */
-  protected def redirect(uriPath : String, tk : HTalk) = new let.RedirectLet(uriPath) act (tk)
+  protected def redirect(uriPath: String, tk: HTalk) = new let.RedirectLet(uriPath) act (tk)
 
   /** Redirects the client to the given URI and adds the sessions ID to
    *  the URI parameters.
    */
-  protected def sessRedirect(uriPath : String, tk : HTalk) = {
+  protected def sessRedirect(uriPath: String, tk: HTalk) = {
     val parts = uriPath.split("\\?", 2)
     val url = parts(0) + ";" + tk.ses.idKey + "=" + tk.ses.id + {
       if (parts.size == 2) "?" + parts(1)

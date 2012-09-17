@@ -1,7 +1,14 @@
 package tiscaf
 
 import java.net.InetSocketAddress
-import java.nio.channels.{ SelectionKey, Selector, ServerSocketChannel }
+import java.nio.channels.{
+  SelectionKey,
+  Selector,
+  ServerSocketChannel,
+  SocketChannel
+}
+import java.nio.ByteBuffer
+import javax.net.ssl._
 
 import sync._
 
@@ -12,7 +19,7 @@ private trait HPlexer {
   def timeoutMillis: Long
   def tcpNoDelay: Boolean
   def onError(e: Throwable): Unit
-  def ssl: Option[HSsl]
+  def ssl: List[HSslContext]
 
   //---------------------- SPI ------------------------------------------
 
@@ -32,7 +39,7 @@ private trait HPlexer {
     }
   }
 
-  final def addListener(peerFactory: SelectionKey => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
+  final def addListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
     try {
       val serverChannel = ServerSocketChannel.open
       servers += serverChannel
@@ -46,7 +53,7 @@ private trait HPlexer {
         keySetGuard.synchronized {
           selector.wakeup
           val key = socketCannel.register(selector, 0)
-          key.attach(new HKeyData(peerFactory(key)))
+          key.attach(new HKeyData(peerFactory(key, None)))
           needToRead(key)
         }
       } catch {
@@ -59,24 +66,29 @@ private trait HPlexer {
     }
   }
 
-  final def addSslListener(peerFactory: SelectionKey => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
+  final def addSslListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, sslData: HSslContext): Unit = Sync.spawnNamed("Acceptor-" + sslData.port) {
     try {
-      // TODO implement it (with SSL sessions)
       val serverChannel = ServerSocketChannel.open
       servers += serverChannel
       serverChannel.configureBlocking(true)
-      serverChannel.socket.bind(new InetSocketAddress(port))
+      serverChannel.socket.bind(new InetSocketAddress(sslData.port))
 
       while (isWorking.get) try {
-        val socketCannel = serverChannel.accept
-        val remoteIp = socketCannel.socket.getInetAddress.getHostAddress
-        val remotePort = socketCannel.socket.getPort
-        socketCannel.socket.setTcpNoDelay(tcpNoDelay)
-        socketCannel.configureBlocking(false)
+        val socketChannel = serverChannel.accept
+        val engine = {
+          val host = socketChannel.socket.getInetAddress.getHostAddress
+          val port = socketChannel.socket.getPort
+          sslData.engine(host, port)
+        }
+        socketChannel.socket.setTcpNoDelay(tcpNoDelay)
+        socketChannel.configureBlocking(false)
+        // perform handshake
+        HSsl.handshake(socketChannel, engine)
+        // and continue
         keySetGuard.synchronized {
           selector.wakeup
-          val key = socketCannel.register(selector, 0)
-          key.attach(new HKeyData(peerFactory(key)))
+          val key = socketChannel.register(selector, 0)
+          key.attach(new HKeyData(peerFactory(key, Some(engine))))
           needToRead(key)
         }
       } catch {

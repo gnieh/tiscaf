@@ -7,12 +7,12 @@ import scala.util.continuations._
 package object tiscaf {
 
   @scala.inline
-  def dummy : Unit @suspendable = shift { k : (Unit => Unit) =>
+  def dummy: Unit @suspendable = shift { k: (Unit => Unit) =>
     k()
   }
 
   @scala.inline
-  implicit def toDummy[T](code : => T) : T @suspendable = {
+  implicit def toDummy[T](code: => T): T @suspendable = {
     dummy
     code
   }
