@@ -42,7 +42,7 @@ object TiscafProject extends Build {
       </scm>
       <developers>
         <developer>
-          <id>gnieh</id>
+          <id>satabin</id>
           <name>Lucas Satabin</name>
         </developer>
         <developer>
