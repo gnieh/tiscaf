@@ -1,26 +1,23 @@
-/*******************************************************************************
- * This file is part of tiscaf.
- * 
- * tiscaf is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * Foobar is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with tiscaf.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+/** *****************************************************************************
+ *  This file is part of tiscaf.
+ *
+ *  tiscaf is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Foobar is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with tiscaf.  If not, see <http://www.gnu.org/licenses/>.
+ *  ****************************************************************************
+ */
 package tiscaf
 
 import scala.util.continuations._
-
-private object HLet {
-  val exe = new sync.SyncExe(10, Int.MaxValue, "HLetResumer")
-}
 
 /** Handles an HTTP request and makes some computation.
  *  This computation may be suspended at any moment and several times
@@ -114,17 +111,14 @@ trait HLet[T] {
 
   /** Resumes the computation of this `HLet` if not already terminated.
    *  Caller pass values that may then be used in the rest of the computation.
-   *  Computation is asynchronously resumed and call to this method returns
-   *  immediately.
+   *  Computation is resumed synchronously, a call to this method blocks
+   *  the current thread until computation is finished.
    */
   final def resume(v: T) = kont match {
     case Some(k) =>
-      HLet.exe.submit(new Runnable {
-        def run() {
-          k(v)
-        }
-      }) // resume computation in another thread
-    case None => throw new RuntimeException("Computation already terminated") // computation terminated, nothing to do
+      k(v) // resume computation in the same thread
+    case None =>
+      throw new RuntimeException("Computation already terminated") // computation terminated, nothing to do
   }
 
   /** Suspends the computation of this `HLet`. Computation may then
