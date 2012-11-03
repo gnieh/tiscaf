@@ -1,19 +1,20 @@
-/*******************************************************************************
- * This file is part of tiscaf.
- * 
- * tiscaf is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * Foobar is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with tiscaf.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+/** *****************************************************************************
+ *  This file is part of tiscaf.
+ *
+ *  tiscaf is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Foobar is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with tiscaf.  If not, see <http://www.gnu.org/licenses/>.
+ *  ****************************************************************************
+ */
 package tiscaf
 
 import scala.collection.{ mutable => mute }
@@ -46,16 +47,16 @@ final private class HSess(data: HTalkData, resp: HResponse) extends mute.Map[Any
   private lazy val sidMap: Pair[String, mute.Map[Any, Any]] = extractSid match {
     case None => HSessMonitor.create(data.app)
     case Some(aSid) => HSessMonitor.bag(aSid) match { // extracted sid may be invalidated already
-      case None => HSessMonitor.create(data.app)
+      case None      => HSessMonitor.create(data.app)
       case Some(bag) => (aSid, bag)
     }
   }
 
   // uri has higher priority rather cookie
   private def extractSid: Option[String] = data.app.tracking match {
-    case HTracking.Uri => extractSidFromUri
+    case HTracking.Uri    => extractSidFromUri
     case HTracking.Cookie => extractSidFromCookie
-    case _ => None
+    case _                => None
   }
 
   private def extractSidFromUri: Option[String] = data.header.uriExt.flatMap { x =>
@@ -96,7 +97,10 @@ private object HSessMonitor {
 
   def invalidate(sid: String): Unit = bags.get(sid) match {
     case None =>
-    case Some(sess) => count.dec(sess.app); bags -= sid;
+    case Some(sess) =>
+      count.dec(sess.app)
+      sess.app.onSessionInvalidate(sid, sess.bag)
+      bags -= sid
   }
 
   object count {
