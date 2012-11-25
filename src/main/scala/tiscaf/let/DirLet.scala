@@ -19,8 +19,8 @@ package let
 
 private object DirLet {
 
-  def top(title : String, server : String) =
-    """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+  def top(title: String, server: String) =
+"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="content-type" content="text/html; charset=utf-8">
 <title>""" + title + """</title>
 
@@ -56,18 +56,19 @@ a {text-decoration:none;}
 
 import DirLet._
 
-protected class DirLet(dirRoot : String, uriRoot : String, pathRest : String) extends HLet[Nothing] {
+protected class DirLet(dirRoot: String, uriRoot: String, pathRest: String) extends HSimpleLet {
 
-  def act(tk : HTalk) = {
+  def act(tk: HTalk) = {
     val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
     val f = new java.io.File(dirRoot + pathRest)
     if (f.exists && f.isDirectory) {
-      val out = tk.bytes(showDir(f, uriExt))
+      val out = tk.bytes(showDir(f, uriExt, tk.encoding))
       tk.setContentLength(out.length).setContentType("text/html").write(out)
-    } else new ErrLet(HStatus.NotFound) act (tk)
+    }
+    else new ErrLet(HStatus.NotFound) act(tk)
   }
 
-  private def showDir(f : java.io.File, uriExt : String) : String = {
+  private def showDir(f: java.io.File, uriExt: String, encoding: String): String = {
     val buf = new StringBuilder
 
     buf.append(top(uriRoot + pathRest, "tiscaf")).append("\n")
@@ -75,17 +76,17 @@ protected class DirLet(dirRoot : String, uriRoot : String, pathRest : String) ex
     val pathRefs = {
       val b = new StringBuilder
       b.append("""<tr><td colspan="4" class="clear"></td></tr><tr><td colspan="4" class="path">""")
-      if (uriRoot == "") b.append(new PathItem("/" + uriExt, "root") toString)
-      else b.append(new PathItem("/" + uriRoot + "/" + uriExt, uriRoot) toString)
+      if (uriRoot == "") b.append(new PathItem("/" + uriExt, "root", encoding).toString )
+      else b.append(new PathItem("/" + uriRoot + "/" + uriExt, uriRoot, encoding).toString )
       val pathItems = if (pathRest.startsWith("/")) pathRest.substring(1).split("/") else pathRest.split("/")
-      for (i <- 0 until pathItems.length) {
+      for(i <- 0 until pathItems.length) {
         val itemName = pathItems(i)
         val itemRef =
           "/" +
-            { if (uriRoot == "") "" else uriRoot + "/" } +
-            { for (j <- 0 to i) yield pathItems(j) }.mkString("/") + "/"
+          {if (uriRoot == "") "" else uriRoot + "/" } +
+          { for(j <- 0 to i) yield pathItems(j) }.mkString("/") + "/"
         if (i == pathItems.length - 1) b.append(" / " + itemName)
-        else b.append(" / " + new PathItem(itemRef, itemName) toString)
+        else b.append(" / " + new PathItem(itemRef, itemName, encoding).toString)
       }
       b.append("""</td></tr>""")
       b.toString
@@ -94,20 +95,21 @@ protected class DirLet(dirRoot : String, uriRoot : String, pathRest : String) ex
     buf.append(pathRefs)
     buf.append(beforeList).append("\n")
 
-    val fileItems = {
-      for (file <- f.listFiles) yield {
-        val item = new ListItem(
-          file.isDirectory,
-          file.getName,
-          file.getName,
-          new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss") format (new java.util.Date(file.lastModified)),
-          DirLet.numFormat.format(file.length),
-          uriExt)
-        item
-      }
-    }.toList.sortWith((i1, i2) => i1 compare i2)
+    val fileItems = { for(file <- f.listFiles) yield {
+      val item = new ListItem(
+        file.isDirectory,
+        file.getName,
+        file.getName,
+        new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss") format(new java.util.Date(file.lastModified)),
+        DirLet.numFormat.format(file.length),
+        uriExt,
+        encoding
+      )
+      item
+    }} .toList.sortWith((i1, i2) => i1 compare i2)
 
-    for (idx <- 1 to fileItems.size) buf.append(fileItems(idx - 1).asString(idx)).append("\n")
+    for(idx <- 1 to fileItems.size) buf.append(fileItems(idx - 1).asString(idx)).append("\n")
+
 
     if (fileItems.size > 10) buf.append(pathRefs)
     buf.append(afterList)
@@ -117,25 +119,27 @@ protected class DirLet(dirRoot : String, uriRoot : String, pathRest : String) ex
 
 }
 
-private class PathItem(href : String, item : String) {
-  override def toString = "<a href=\"" + href + "\">" + item + "</a>"
+private class PathItem(href: String, item: String, encoding: String) {
+  override def toString = "<a href=\"" + java.net.URLEncoder.encode(href, encoding) +
+                          "\">" + item + "</a>"
 }
 
 private class ListItem(
-    private val isDir : Boolean,
-    href : String,
-    private val name : String,
-    date : String,
-    size : String,
-    uriExt : String) {
+  private val isDir: Boolean,
+  href: String,
+  private val name: String,
+  date: String,
+  size: String,
+  uriExt: String,
+  encoding: String ) {
 
-  def asString(num : Int) =
+  def asString(num: Int) =
     "<tr class=\"" + { if (num % 2 == 1) "odd" else "even" } + "\"><td class=\"td1\">" + { if (isDir) "dir" else "  " } +
-      "</td><td><a href=\"" + href + { if (isDir) "/" else "" } + uriExt + "\">" + name + "</a></td><td align=\"right\">" +
-      { if (isDir) "   " else size } +
-      "</td><td align=\"right\">" + date + "</td></tr>"
+    "</td><td><a href=\"" + java.net.URLEncoder.encode(href, encoding) +
+    { if (isDir) "/" else "" } + uriExt + "\">" + name + "</a></td><td align=\"right\">" +
+    { if (isDir) "   "  else size } + "</td><td align=\"right\">" + date + "</td></tr>"
 
-  def compare(that : ListItem) : Boolean = {
+  def compare(that: ListItem): Boolean = {
     if (isDir && !that.isDir) true
     else if (!isDir && that.isDir) false
     else name.toLowerCase.compareTo(that.name.toLowerCase) < 0
