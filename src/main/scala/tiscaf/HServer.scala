@@ -44,7 +44,10 @@ trait HServer {
   protected def name = "tiscaf"
 
   /** Returns the port number listened to for a stop message. */
-  protected def stopPort: Int = 8911
+  def stopPort: Int = 8911
+
+  /** Returns the host to listen to for stop message. */
+  def stopHost: String = "localhost"
 
   protected def tcpNoDelay: Boolean = false // use 'true' for benchmarking only!
 
@@ -80,7 +83,7 @@ trait HServer {
   protected def startStopListener: Unit = sync.Sync.spawnNamed("StopListener") {
     // only bind to localhost for stop message
     val serverSocket =
-      new java.net.ServerSocket(stopPort, 0, java.net.InetAddress.getLocalHost)
+      new java.net.ServerSocket(stopPort, 0, java.net.InetAddress.getByName(stopHost))
     println(name + " stop listener is listening to port " + stopPort)
     val dataSocket = serverSocket.accept
     val ar = new Array[Byte](256)

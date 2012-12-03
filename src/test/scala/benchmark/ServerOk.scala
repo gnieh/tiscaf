@@ -5,7 +5,7 @@ import tiscaf._
 object ServerOk extends HServer {
 
   def main(args: Array[String]): Unit = {
-    try { new HStop(8911) stop } catch { case _ => }
+    try { new HStop("localhost", 8911) stop } catch { case _ => }
     Thread.sleep(600)
     start
   }

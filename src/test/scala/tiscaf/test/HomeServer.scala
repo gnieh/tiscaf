@@ -25,4 +25,4 @@ object HomeServer extends HServer with App {
   start
 }
 
-object HomeServerStop { def main(args: Array[String]) = new tiscaf.HStop(8911) stop }
+object HomeServerStop { def main(args: Array[String]) = new tiscaf.HStop("localhost", 8911) stop }

@@ -21,10 +21,10 @@ import java.net.Socket
 
 // embryonic way to stop
 
-final class HStop(port : Int) {
+final class HStop(host: String, port : Int) {
 
   def stop {
-    val s = new Socket("localhost", port)
+    val s = new Socket(host, port)
     s.getOutputStream.write("stop".getBytes("ISO-8859-1"))
     s.close
   }
