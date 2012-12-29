@@ -35,7 +35,7 @@ protected class FiLet(path : String, bufSize : Int, plainAsDefault : Boolean) ex
           if (range.endsWith("-")) try {
             val tmp = range.substring(0, range.length - 1).trim.toLong
             if (tmp >= 0 && tmp < f.length) tmp else -1L
-          } catch { case _ => -1L }
+          } catch { case _: Exception => -1L }
           else -1L
       }
 

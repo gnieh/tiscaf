@@ -36,7 +36,7 @@ trait ResourceLet extends HLet[Nothing] {
   protected def getResource(path: String): java.io.InputStream = {
     val url = this.getClass.getResource(path)
     if (url == null) null else url.getProtocol match {
-      case "jar"  => val is = url.openStream; try { is.available; is } catch { case _ => null }
+      case "jar"  => val is = url.openStream; try { is.available; is } catch { case _: Exception => null }
       case "file" => if (new java.io.File(url.toURI) isFile) url.openStream else null
       case _      => null
     }

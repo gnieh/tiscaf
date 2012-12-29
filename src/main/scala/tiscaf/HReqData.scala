@@ -89,18 +89,18 @@ object HReqData {
     }
 
     // param(key) helpers
-    def asByte(key : String) : Option[Byte] = try { Some(param(key).get.toByte) } catch { case _ => None }
-    def asShort(key : String) : Option[Short] = try { Some(param(key).get.toShort) } catch { case _ => None }
-    def asInt(key : String) : Option[Int] = try { Some(param(key).get.toInt) } catch { case _ => None }
-    def asLong(key : String) : Option[Long] = try { Some(param(key).get.toLong) } catch { case _ => None }
-    def asFloat(key : String) : Option[Float] = try { Some(param(key).get.toFloat) } catch { case _ => None }
-    def asDouble(key : String) : Option[Double] = try { Some(param(key).get.toDouble) } catch { case _ => None }
+    def asByte(key : String) : Option[Byte] = try { Some(param(key).get.toByte) } catch { case _: Exception => None }
+    def asShort(key : String) : Option[Short] = try { Some(param(key).get.toShort) } catch { case _: Exception => None }
+    def asInt(key : String) : Option[Int] = try { Some(param(key).get.toInt) } catch { case _: Exception => None }
+    def asLong(key : String) : Option[Long] = try { Some(param(key).get.toLong) } catch { case _: Exception => None }
+    def asFloat(key : String) : Option[Float] = try { Some(param(key).get.toFloat) } catch { case _: Exception => None }
+    def asDouble(key : String) : Option[Double] = try { Some(param(key).get.toDouble) } catch { case _: Exception => None }
 
     // POST/application/octet-stream case
     def octets : Option[Array[Byte]] = data.octets
 
-    private def encode(s : String) = try { java.net.URLEncoder.encode(s, data.app.encoding) } catch { case _ => s }
-    private def decode(s : String) = try { java.net.URLDecoder.decode(s, data.app.encoding) } catch { case _ => s }
+    private def encode(s : String) = try { java.net.URLEncoder.encode(s, data.app.encoding) } catch { case _: Exception => s }
+    private def decode(s : String) = try { java.net.URLDecoder.decode(s, data.app.encoding) } catch { case _: Exception => s }
   }
 
 }

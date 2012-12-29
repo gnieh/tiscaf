@@ -179,6 +179,9 @@ private[tiscaf] object HSsl {
             case SSLEngineResult.Status.BUFFER_OVERFLOW =>
               // compact net buffer
               myNetData.compact
+
+            case _ =>
+              throw new Exception("Is it possible that this happens?")
           }
 
         case NEED_TASK =>
@@ -189,6 +192,9 @@ private[tiscaf] object HSsl {
             runnable = engine.getDelegatedTask
           }
           hs = engine.getHandshakeStatus
+
+        case _ =>
+          throw new Exception("Is it possible that this happens?")
       }
     }
 

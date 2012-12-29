@@ -68,7 +68,7 @@ final private class HSess(data: HTalkData, resp: HResponse) extends mute.Map[Any
   private def extractSidFromCookie: Option[String] = data.header.header("cookie").flatMap { x =>
     val sids = for {
       pair <- x.split(";")
-      val parts = pair.split("=").map(_.trim)
+      parts = pair.split("=").map(_.trim)
       if (parts.size == 2) && (parts(0) == data.app.cookieKey) && HSessMonitor.sidSyntaxIsValid(parts(1))
     } yield parts(1).trim
 

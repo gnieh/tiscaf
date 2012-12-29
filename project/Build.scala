@@ -8,11 +8,18 @@ object TiscafProject extends Build {
     name := "tiscaf",
     version := "0.8-SNAPSHOT",
     scalaVersion := "2.9.2",
-    crossScalaVersions := Seq("2.9.2"),
+    crossScalaVersions := Seq("2.9.2", "2.10.0-RC5"),
     autoCompilerPlugins := true,
+    scalacOptions += "-P:continuations:enable",
     addContinuations,
-    scalacOptions += "-P:continuations:enable")
+    features)
       settings (publishSettings : _*))
+
+  def features = scalacOptions <++= scalaVersion map { v => if (v.startsWith("2.10"))
+      Seq("-deprecation", "-language:_")
+    else
+      Seq("-deprecation")
+  }
 
   def publishSettings : Seq[Setting[_]] = Seq(
     // If we want on maven central, we need to be in maven style.
@@ -52,7 +59,7 @@ object TiscafProject extends Build {
       </developers>))
 
   def addContinuations = libraryDependencies <<= (scalaVersion, libraryDependencies) apply { (v, d) =>
-    d :+ compilerPlugin("org.scala-lang.plugins" % "continuations" % v)
+        d :+ compilerPlugin("org.scala-lang.plugins" % "continuations" % v)
   }
 
 }

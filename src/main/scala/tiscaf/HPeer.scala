@@ -120,7 +120,7 @@ private trait HSimplePeer extends HPeer {
       }
       submit(toRun)
     }
-  } catch { case e => dispose; onError(e) }
+  } catch { case e: Exception => dispose; onError(e) }
 
   // ByteBuffer.wrap(ar, offset, length) is slower in my tests rather direct array putting
   final def writeToChannel(ar: Array[Byte], offset: Int, length: Int) = {
@@ -226,7 +226,7 @@ private trait HSslPeer extends HPeer {
       }
       submit(toRun)
     }
-  } catch { case e => dispose; onError(e) }
+  } catch { case e: Exception => dispose; onError(e) }
 
   // ByteBuffer.wrap(ar, offset, length) is slower in my tests rather direct array putting
   final def writeToChannel(ar: Array[Byte], offset: Int, length: Int) = {

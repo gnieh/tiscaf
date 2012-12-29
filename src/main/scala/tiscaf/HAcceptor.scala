@@ -62,7 +62,7 @@ private trait HTalkData {
   def octets: Option[Array[Byte]]
   def writer: HWriter
 
-  def aliveReq = try { header.isPersistent } catch { case _ => false }
+  def aliveReq = try { header.isPersistent } catch { case _: Exception => false }
 }
 
 private class HAcceptor(
@@ -195,8 +195,9 @@ private class HAcceptor(
       try {
         new tiscaf.let.ErrLet(HStatus.ServiceUnavailable, "too many sessions") act (tk)
       } catch {
-        case e =>
+        case e: Exception =>
           onError(e)
+         dummy
       }
     } else {
       if (app.keepAlive && in.header.get.isPersistent) {
@@ -208,14 +209,15 @@ private class HAcceptor(
       try {
         thelet.act(tk)
       } catch {
-        case e =>
+        case e: Exception =>
           onError(e) // reporting HLet errors
           try {
-            new let.ErrLet(HStatus.InternalServerError).act(tk)
+            reset {
+              new let.ErrLet(HStatus.InternalServerError).act(tk)
+            }
           } // connection can be closed here...
           catch {
-            case _ => // ...and "header is already sent" will be arised; don't report it.
-              ()
+            case _: Exception => // ...and "header is already sent" will be arised; don't report it.
           }
       }
     }

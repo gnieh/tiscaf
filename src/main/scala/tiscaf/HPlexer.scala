@@ -42,7 +42,7 @@ private trait HPlexer {
   final def start = synchronized {
     if (!isWorking.get) {
       isWorking.set(true)
-      Sync.spawnNamed("Plexer") { try { plex } catch { case e => onError(e) } }
+      Sync.spawnNamed("Plexer") { try { plex } catch { case e: Exception => onError(e) } }
     }
   }
 
@@ -74,11 +74,11 @@ private trait HPlexer {
         }
       } catch {
         case e: java.nio.channels.AsynchronousCloseException =>
-        case e => onError(e)
+        case e: Exception => onError(e)
       }
     } catch {
       case e: java.nio.channels.AsynchronousCloseException =>
-      case e => throw e
+      case e: Exception => throw e
     }
   }
 
@@ -109,11 +109,11 @@ private trait HPlexer {
         }
       } catch {
         case e: java.nio.channels.AsynchronousCloseException =>
-        case e => onError(e)
+        case e: Exception => onError(e)
       }
     } catch {
       case e: java.nio.channels.AsynchronousCloseException =>
-      case e => throw e
+      case e: Exception => throw e
     }
   }
 
@@ -166,7 +166,7 @@ private trait HPlexer {
       }
       lastExpire.set(now)
     }
-  } catch { case e => onError(e) }
+  } catch { case e: Exception => onError(e) }
 
   // main multiplexer loop
   private def plex: Unit = while (isWorking.get) try {
@@ -183,13 +183,13 @@ private trait HPlexer {
         if (key.isValid) {
           val data = key.attachment.asInstanceOf[HKeyData]
           data.stamp = now
-          if (key.isWritable) try { key.interestOps(0); data.peer.proceedToWrite } catch { case _ => /* can be canceled */ }
-          else if (key.isReadable) try { key.interestOps(0); data.peer.readChannel } catch { case _ => /* can be canceled */ }
+          if (key.isWritable) try { key.interestOps(0); data.peer.proceedToWrite } catch { case _: Exception => /* can be canceled */ }
+          else if (key.isReadable) try { key.interestOps(0); data.peer.readChannel } catch { case _: Exception => /* can be canceled */ }
         }
       }
     }
 
-  } catch { case e => onError(e) }
+  } catch { case e: Exception => onError(e) }
 
 }
 

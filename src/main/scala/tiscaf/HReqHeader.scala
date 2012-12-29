@@ -71,7 +71,7 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
 
   lazy val isPersistent = parsePersistence
 
-  lazy val contentLength : Option[Long] = try { Some(pairs("content-length").toLong) } catch { case _ => None }
+  lazy val contentLength : Option[Long] = try { Some(pairs("content-length").toLong) } catch { case _: Exception => None }
   lazy val boundary = parseBoundary
 
   /*
@@ -160,7 +160,7 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
             case Some(bnd) => try {
               val aBoundary = Some(bnd.split("=")(1).trim) // to rise an exception
               HReqType.PostMulti
-            } catch { case _ => HReqType.Invalid }
+            } catch { case _: Exception => HReqType.Invalid }
           }
         case _ => HReqType.PostOctets // falling back to 
       }
@@ -172,7 +172,7 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
       case None => None
       case Some(contType) => contType.split(";").map(_.trim).find(_.toLowerCase.startsWith("boundary")) match {
         case None      => None
-        case Some(bnd) => try { Some(bnd.split("=")(1).trim) } catch { case _ => None }
+        case Some(bnd) => try { Some(bnd.split("=")(1).trim) } catch { case _: Exception => None }
       }
     }
     case _ => None

@@ -53,10 +53,10 @@ final class SyncExe(poolSize: Int, queueCap: Int, name: String, onError: Throwab
   private def newThread(i : Int) : Thread = new Thread {
     override def run = while (working.get) { try { qu.take.run } catch { 
       case e : java.lang.InterruptedException => // ignore
-      case e                                  => SyncExe.this.onError(e)} 
+      case e : Exception                      => SyncExe.this.onError(e)} 
     }
     setName(SyncExe.this.name + "-" + poolNum + "-" + i)
   }
       
-  private def cancelAll : Unit = threads.foreach { t => try { t.interrupt } catch { case _ => } }
+  private def cancelAll : Unit = threads.foreach { t => try { t.interrupt } catch { case _: Exception => } }
 }
