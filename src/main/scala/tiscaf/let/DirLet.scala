@@ -120,8 +120,12 @@ protected class DirLet(dirRoot: String, uriRoot: String, pathRest: String) exten
 }
 
 private class PathItem(href: String, item: String, encoding: String) {
-  override def toString = "<a href=\"" + java.net.URLEncoder.encode(href, encoding) +
-                          "\">" + item + "</a>"
+  override def toString = {
+    def subdirs = href.split("/").map(java.net.URLEncoder.encode(_, encoding)).mkString("/")
+    // split() doesn't keep trailing slash
+    def encodedHref = if (href.endsWith("/")) subdirs + "/" else subdirs
+    "<a href=\"" + encodedHref + "\">" + item + "</a>"
+  }
 }
 
 private class ListItem(
