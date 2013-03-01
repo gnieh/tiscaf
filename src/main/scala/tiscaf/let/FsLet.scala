@@ -19,8 +19,11 @@ package let
 
 import java.io.File
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
 /** Simply serve static content from the file system. */
-trait FsLet extends HLet[Nothing] {
+trait FsLet extends HSimpleLet {
 
   //----------------- to implement -------------------------
 
@@ -63,28 +66,30 @@ trait FsLet extends HLet[Nothing] {
 
   //------------------ HLet implemented --------------------
 
-  def act(tk: HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
-    val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
+  def act(tk: HTalk) {
+      if ((tk.req.uriPath).startsWith(theUriRoot)) {
+      val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
 
-    val pathRest = tk.req.uriPath.substring(theUriRoot.length)
-    val path = theDirRoot + { if (pathRest.startsWith("/")) pathRest.substring(1) else pathRest }
-    val f = new File(path)
+      val pathRest = tk.req.uriPath.substring(theUriRoot.length)
+      val path = theDirRoot + { if (pathRest.startsWith("/")) pathRest.substring(1) else pathRest }
+      val f = new File(path)
 
-    if ((f.getCanonicalPath.replace("\\\\", "/") + "/").startsWith(theDirRoot) && f.exists) {
-      if (f.isDirectory) {
-        // try indexes first - before direcory listing
-        if (theUriRoot.isEmpty || tk.req.uriPath.endsWith("/")) indexes.find { index =>
-          val indexFile = new File(path + index)
-          indexFile.exists && indexFile.isFile
-        } match {
-          case None    => if (allowLs) new DirLet(theDirRoot, theUriRoot, pathRest).act(tk) else notFound(tk)
-          case Some(x) => new FiLet(path + x, bufSize, plainAsDefault).act(tk)
-        }
-        else new RedirectLet("/" + theUriRoot + pathRest + "/" + uriExt) act (tk)
-      } // isDirectory
-      else new FiLet(path, bufSize, plainAsDefault).act(tk)
+      if ((f.getCanonicalPath.replace("\\\\", "/") + "/").startsWith(theDirRoot) && f.exists) {
+        if (f.isDirectory) {
+          // try indexes first - before direcory listing
+          if (theUriRoot.isEmpty || tk.req.uriPath.endsWith("/")) indexes.find { index =>
+            val indexFile = new File(path + index)
+            indexFile.exists && indexFile.isFile
+          } match {
+            case None    => if (allowLs) new DirLet(theDirRoot, theUriRoot, pathRest).act(tk) else notFound(tk)
+            case Some(x) => new FiLet(path + x, bufSize, plainAsDefault).act(tk)
+          }
+          else new RedirectLet("/" + theUriRoot + pathRest + "/" + uriExt) act (tk)
+        } // isDirectory
+        else new FiLet(path, bufSize, plainAsDefault).act(tk)
+      } else notFound(tk)
     } else notFound(tk)
-  } else notFound(tk)
+  }
 
   private def notFound(tk: HTalk) = new ErrLet(HStatus.NotFound) act (tk)
 }

@@ -19,6 +19,8 @@ package tiscaf
 
 import javax.net.ssl.SSLEngine
 
+import scala.concurrent.ExecutionContext
+
 /** A server provides:
  *   - few common settings,
  *   - list of [[tiscaf.HApp]]lications,
@@ -39,6 +41,10 @@ trait HServer {
   protected def ports: Set[Int]
 
   //------------------------- to override ------------------------------
+
+  /** The execution context for promises and futures */
+  protected implicit def executionContext =
+    ExecutionContext.Implicits.global
 
   /** Returns the server name, used in response headers. */
   protected def name = "tiscaf"
@@ -158,6 +164,8 @@ trait HServer {
 
           def engine = sslEngine
 
+          implicit def executionContext = HServer.this.executionContext
+
           val acceptor =
             new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)
 
@@ -173,6 +181,8 @@ trait HServer {
           def bufferSize: Int = HServer.this.bufferSize
 
           def onError(e: Throwable): Unit = HServer.this.onError(e)
+
+          implicit def executionContext = HServer.this.executionContext
 
           val acceptor =
             new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)

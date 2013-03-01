@@ -19,11 +19,14 @@ package let
 
 import java.io.RandomAccessFile
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
 // doesn't catch IO exception as far as they will be delegated to HServer.onError()
 
-protected class FiLet(path : String, bufSize : Int, plainAsDefault : Boolean) extends HLet[Nothing] {
+protected class FiLet(path : String, bufSize : Int, plainAsDefault : Boolean) extends HSimpleLet {
 
-  def act(tk : HTalk) = {
+  def act(tk : HTalk) {
     val f = new java.io.File(path)
     if (f.exists && f.isFile) {
 

@@ -17,8 +17,11 @@
 package tiscaf
 package let
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
 /** Serve static resources that are present in the classpath*/
-trait ResourceLet extends HLet[Nothing] {
+trait ResourceLet extends HSimpleLet {
 
   //----------------- to implement -------------------------
 
@@ -77,33 +80,35 @@ trait ResourceLet extends HLet[Nothing] {
 
   //------------------ HLet implemented --------------------
 
-  def act(tk: HTalk) = if ((tk.req.uriPath).startsWith(theUriRoot)) {
-    val path = resolvePath(tk)
+  def act(tk: HTalk) {
+    if ((tk.req.uriPath).startsWith(theUriRoot)) {
+      val path = resolvePath(tk)
 
-    val fullPathAndStream = ("" +: indexes)
-      .map(idx => (path + { if (idx.length == 0) "" else "/" + idx }).replace("//", "/"))
-      .map { fullPath => (fullPath, getResource(fullPath)) }
-      .find(_._2 != null)
+      val fullPathAndStream = ("" +: indexes)
+        .map(idx => (path + { if (idx.length == 0) "" else "/" + idx }).replace("//", "/"))
+        .map { fullPath => (fullPath, getResource(fullPath)) }
+        .find(_._2 != null)
 
-    if (fullPathAndStream.isEmpty) notFound(tk) else {
-      def cType = HMime.exts.keySet.find(ext => fullPathAndStream.get._1.toLowerCase.endsWith("." + ext)) match {
-        case Some(e) => HMime.exts(e)
-        case None    => if (plainAsDefault) "text/plain" else "application/octet-stream"
-      }
-      tk.setContentType(cType)
+      if (fullPathAndStream.isEmpty) notFound(tk) else {
+        def cType = HMime.exts.keySet.find(ext => fullPathAndStream.get._1.toLowerCase.endsWith("." + ext)) match {
+          case Some(e) => HMime.exts(e)
+          case None    => if (plainAsDefault) "text/plain" else "application/octet-stream"
+        }
+        tk.setContentType(cType)
 
-      val ar = new Array[Byte](bufSize)
-      val is = fullPathAndStream.get._2
+        val ar = new Array[Byte](bufSize)
+        val is = fullPathAndStream.get._2
 
-      @scala.annotation.tailrec
-      def step(wasRead: Int): Unit = if (wasRead > 0) {
-        tk.write(ar, 0, wasRead)
+        @scala.annotation.tailrec
+        def step(wasRead: Int): Unit = if (wasRead > 0) {
+          tk.write(ar, 0, wasRead)
+          step(is.read(ar))
+        }
         step(is.read(ar))
+        is.close
       }
-      step(is.read(ar))
-      is.close
-    }
-  } else notFound(tk)
+    } else notFound(tk)
+  }
 
   private def notFound(tk: HTalk) = new ErrLet(HStatus.NotFound, tk.req.uriPath) act (tk)
 }

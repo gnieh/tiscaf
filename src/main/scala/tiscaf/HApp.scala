@@ -34,7 +34,7 @@ trait HApp {
    *  available via `HReqData`.
    *  @see [[tiscaf.HReqData]]
    */
-  def resolve(req: HReqData): Option[HLet[_]]
+  def resolve(req: HReqData): Option[HLet]
 
   //----------------------- to override ---------------------------
 

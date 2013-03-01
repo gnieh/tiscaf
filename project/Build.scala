@@ -8,10 +8,8 @@ object TiscafProject extends Build {
     name := "tiscaf",
     version := "0.8-SNAPSHOT",
     scalaVersion := "2.10.0",
-    crossScalaVersions := Seq("2.9.2", "2.10.0"),
-    autoCompilerPlugins := true,
-    scalacOptions += "-P:continuations:enable",
-    addContinuations,
+    crossScalaVersions := Seq("2.9.3", "2.10.0"),
+    libraryDependencies ++= dependencies,
     features)
       settings (publishSettings : _*))
 
@@ -20,6 +18,17 @@ object TiscafProject extends Build {
     else
       Seq("-deprecation")
   }
+
+  def dependencies = Seq(
+    "org.scalatest" %% "scalatest" % "2.0.M5" % "test" cross CrossVersion.binaryMapped {
+      case "2.9.3" => "2.9.0"
+      case v => v
+    },
+    "net.databinder.dispatch" %% "dispatch-core" % "0.9.5" % "test" cross CrossVersion.binaryMapped {
+      case "2.9.3" => "2.9.2"
+      case "2.10.0" => "2.10"
+    }
+  )
 
   def publishSettings : Seq[Setting[_]] = Seq(
     // If we want on maven central, we need to be in maven style.
@@ -57,9 +66,5 @@ object TiscafProject extends Build {
           <name>Andrew Gaydenko</name>
         </developer>
       </developers>))
-
-  def addContinuations = libraryDependencies <<= (scalaVersion, libraryDependencies) apply { (v, d) =>
-        d :+ compilerPlugin("org.scala-lang.plugins" % "continuations" % v)
-  }
 
 }

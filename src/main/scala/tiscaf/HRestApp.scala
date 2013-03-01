@@ -50,21 +50,21 @@ class HRestApp extends HApp {
   }
 
   private val postHandler =
-    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet[_]]]
+    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
   private val getHandler =
-    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet[_]]]
+    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
   private val deleteHandler =
-    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet[_]]]
+    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
 
-  def post(handler : PartialFunction[(List[String], HReqData), HLet[_]]) {
+  def post(handler : PartialFunction[(List[String], HReqData), HLet]) {
     postHandler += handler
   }
 
-  def get(handler : PartialFunction[(List[String], HReqData), HLet[_]]) {
+  def get(handler : PartialFunction[(List[String], HReqData), HLet]) {
     getHandler += handler
   }
 
-  def delete(handler : PartialFunction[(List[String], HReqData), HLet[_]]) {
+  def delete(handler : PartialFunction[(List[String], HReqData), HLet]) {
     deleteHandler += handler
   }
 

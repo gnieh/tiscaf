@@ -17,19 +17,11 @@
  */
 package tiscaf
 
-import scala.util.continuations._
+import scala.util._
+import scala.concurrent._
 
-/** Handles an HTTP request and makes some computation.
- *  This computation may be suspended at any moment and several times
- *  by calling the [[tiscaf.HLet]]#suspend methods. The computation
- *  will be resumed at this point when the [[tiscaf.HLet]]#resume method
- *  is called. The data passed to the `resume` method is returned by the
- *  `suspend` call.
- *
- *  @tparam T the type of data passed when the computation is resumed
- *
- */
-trait HLet[T] {
+/** Handles an HTTP request and makes some computation that wil eventually termintate . */
+trait HLet {
 
   //------------------- to implement ------------------------
 
@@ -38,7 +30,7 @@ trait HLet[T] {
    *  session data, as well as the method to send the response to the client.
    *  @see [[tiscaf.HTalk]]
    */
-  def act(talk: HTalk): Any @suspendable
+  def fact(talk: HTalk)(implicit executionContext: ExecutionContext): Future[Unit]
 
   //-------------------- to override ------------------------
 
@@ -98,36 +90,7 @@ trait HLet[T] {
    */
   def partsAcceptor(reqInfo: HReqHeaderData): Option[HPartsAcceptor] = None // for multipart requests
 
-  /** Called when the computation is suspended.
-   *  It may be used to store this HLet and resume it later.
-   *  @note Implementors must take care of synchronization as different `HLet`s
-   *   may be called concurrently.
-   */
-  protected[this] def onSuspend {} // called when the execution of this HLet is suspended
-
   //------------------------ few helpers --------------------
-
-  private[this] var kont: Option[T => Unit] = None
-
-  /** Resumes the computation of this `HLet` if not already terminated.
-   *  Caller pass values that may then be used in the rest of the computation.
-   *  Computation is resumed synchronously, a call to this method blocks
-   *  the current thread until computation is finished.
-   */
-  final def resume(v: T) = kont match {
-    case Some(k) =>
-      k(v) // resume computation in the same thread
-    case None =>
-      throw new RuntimeException("Computation already terminated") // computation terminated, nothing to do
-  }
-
-  /** Suspends the computation of this `HLet`. Computation may then
-   *  be resumed later.
-   */
-  final protected[this] def suspend = shift { k: (T => Unit) =>
-    onSuspend
-    kont = Some(k)
-  }
 
   /** Answers with an error response with the given code and message. */
   protected def err(status: HStatus.Value, msg: String, tk: HTalk) = new let.ErrLet(status, msg) act (tk)
@@ -144,7 +107,7 @@ trait HLet[T] {
   /** Redirects the client to the given URI and adds the sessions ID to
    *  the URI parameters.
    */
-  protected def sessRedirect(uriPath: String, tk: HTalk) = {
+  protected def sessRedirect(uriPath: String, tk: HTalk) {
     val parts = uriPath.split("\\?", 2)
     val url = parts(0) + ";" + tk.ses.idKey + "=" + tk.ses.id + {
       if (parts.size == 2) "?" + parts(1)
@@ -154,8 +117,55 @@ trait HLet[T] {
   }
 }
 
-/** A simple [[tiscaf.HLet]] that will not be suspended or suspended and resumed
- *  without any parameter passed.
- *  Most of the time, one wants to implement this one instead of [[tiscaf.HLet]].
+class Suspended[T] {
+  private[tiscaf] val p = promise[T]
+
+  /** Resumes the computation with the given value and returns immediately */
+  def resume(value: T) {
+    p.complete(Success(value))
+  }
+}
+
+/**  This computation may potentially be suspended at any moment and several times
+ *  by calling the [[tiscaf.HSuspendableLet]]#suspend methods. The computation
+ *  will be resumed at this point when the [[tiscaf.HLet]]#resume method
+ *  is called. The data passed to the `resume` method is returned by the
+ *  `suspend` call.
+ *
  */
-trait HSimpleLet extends HLet[Unit]
+trait HSuspendableLet extends HLet {
+
+  //------------------- to implement ------------------------
+
+  /** This method is called whenever the suspend method is called.
+   *  Implementor may choose what how to store the promise whenever the computation
+   *  is suspended. */
+  protected def onSuspend[T: Manifest](promise: Suspended[T])
+
+  //------------------------ few helpers --------------------
+
+  protected def suspend[T: Manifest]: Future[T] = {
+    val suspended = new Suspended[T]
+    onSuspend(suspended)
+    suspended.p.future
+  }
+
+  protected def suspend[T](resume: T => Unit)(implicit manifest: Manifest[T],
+    executionContext: ExecutionContext): Future[Unit] = {
+      suspend[T] flatMap (v => future(resume(v)))
+  }
+
+}
+
+/** A simple non suspendable [[tiscaf.HLet]]
+ *
+ *  @author Lucas Satabin */
+trait HSimpleLet extends HLet {
+
+  final override def fact(talk: HTalk)(implicit executionContext: ExecutionContext) = future {
+    act(talk)
+  }
+
+  def act(talk: HTalk)
+
+}

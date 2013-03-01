@@ -19,8 +19,8 @@ package tiscaf
 object HTree {
   implicit def string2lay(aDir: String) = new HTree { override def dir = aDir }
 
-  def stub(text: String): HLet[_] = new HSimpleLet {
-    def act(tk: HTalk) = {
+  def stub(text: String): HLet = new HSimpleLet {
+    def act(tk: HTalk) {
       val out = tk.bytes(text)
       tk.setContentLength(out.length) // if not buffered
         .setContentType("text/plain; charset=UTF-8")
@@ -61,10 +61,10 @@ object HTree {
 trait HTree { self =>
 
   def dir: String = ""
-  def let: Option[HLet[_]] = None
+  def let: Option[HLet] = None
   def lays: Seq[HTree] = Nil
 
-  final def !(addLet: => HLet[_]) = new HTree {
+  final def !(addLet: => HLet) = new HTree {
     override def dir = self.dir
     override def let = Some(addLet)
     override def lays = self.lays
@@ -76,7 +76,7 @@ trait HTree { self =>
     override def lays = addLays.toSeq
   }
 
-  final def resolve(dirs: Seq[String]): Option[HLet[_]] = dirs.filter(_.length != 0).toSeq match {
+  final def resolve(dirs: Seq[String]): Option[HLet] = dirs.filter(_.length != 0).toSeq match {
     case Seq() => if (self.dir.length == 0) self.let else None // uri == ""
     case seq =>
       // not-tail recursion
@@ -90,5 +90,5 @@ trait HTree { self =>
       nextDir(seq, self).flatMap(_.let)
   }
 
-  final def resolve(uriPath: String): Option[HLet[_]] = resolve(uriPath.split("/"))
+  final def resolve(uriPath: String): Option[HLet] = resolve(uriPath.split("/"))
 }

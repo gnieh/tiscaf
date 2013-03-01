@@ -20,7 +20,7 @@ import java.nio.ByteBuffer
 import java.nio.channels.{ Selector, SelectionKey, SocketChannel }
 import javax.net.ssl._
 
-import scala.util.continuations._
+import scala.concurrent.ExecutionContext
 
 private trait HPeer {
 
@@ -37,6 +37,8 @@ private trait HPeer {
 
   val acceptor: HAcceptor
   def submit(toRun: Runnable): Unit
+
+  implicit def executionContext: ExecutionContext
 
   //-------------------------------------------------------------------
 
@@ -96,13 +98,12 @@ private trait HSimplePeer extends HPeer {
 
   final def readChannel: Unit = try {
 
-    def doTalkItself: Unit = reset {
-      acceptor.talk match {
+    def doTalkItself =
+      acceptor.talk onSuccess {
         case PeerWant.Read  => acceptor.in.reset; connRead // new alive request/response
         case PeerWant.Close => connClose
         case x              => sys.error("unexpected PeerWant value " + x)
       }
-    }
 
     theBuf.clear
     val wasRead = channel.read(theBuf)
@@ -179,13 +180,12 @@ private trait HSslPeer extends HPeer {
 
   final def readChannel: Unit = try {
 
-    def doTalkItself: Unit = reset {
+    def doTalkItself =
       acceptor.talk match {
         case PeerWant.Read  => acceptor.in.reset; connRead // new alive request/response
         case PeerWant.Close => connClose
         case x              => sys.error("unexpected PeerWant value " + x)
       }
-    }
 
     // clear the buffers before processing
 

@@ -56,9 +56,12 @@ a {text-decoration:none;}
 
 import DirLet._
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
 protected class DirLet(dirRoot: String, uriRoot: String, pathRest: String) extends HSimpleLet {
 
-  def act(tk: HTalk) = {
+  def act(tk: HTalk) {
     val uriExt = if (tk.req.uriExt.isDefined) { ";" + tk.req.uriExt.get } else ""
     val f = new java.io.File(dirRoot + pathRest)
     if (f.exists && f.isDirectory) {

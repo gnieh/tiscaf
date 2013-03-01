@@ -18,7 +18,7 @@ package tiscaf
 
 import scala.collection.{ mutable => mute }
 
-import scala.util.continuations._
+import scala.concurrent._
 
 private object HReqState extends Enumeration {
   val WaitsForHeader, WaitsForData, WaitsForPart, WaitsForOctets, IsInvalid, IsReady = Value
@@ -31,7 +31,7 @@ private class HConnData {
   var acceptedTotalLength: Long = 0L
   var header: Option[HReqHeader] = None
   var parMap: mute.Map[String, Seq[String]] = new mute.HashMap[String, Seq[String]]()
-  var appLet: Option[(HApp, HLet[_])] = None
+  var appLet: Option[(HApp, HLet)] = None
   var octetStream: Option[Array[Byte]] = None
   var parts: Option[HPartData] = None
 
@@ -70,7 +70,8 @@ private class HAcceptor(
     apps: Seq[HApp],
     connectionTimeout: Int,
     onError: Throwable => Unit,
-    maxPostDataLength: Int) {
+    maxPostDataLength: Int)(
+      implicit executionContext: ExecutionContext) {
 
   val in = new HConnData
 
@@ -186,18 +187,17 @@ private class HAcceptor(
     }
   }
 
-  def talk: PeerWant.Value @suspendable = {
+  def talk: Future[PeerWant.Value] = {
     val (app, thelet) = in.appLet.get
     val tk = new HTalk(in.toTalkData(writer))
 
-    if ((app.tracking != HTracking.NotAllowed) &&
+    val f = if ((app.tracking != HTracking.NotAllowed) &&
       (HSessMonitor.count.get(app) >= app.maxSessionsCount)) {
       try {
-        new tiscaf.let.ErrLet(HStatus.ServiceUnavailable, "too many sessions") act (tk)
+        new tiscaf.let.ErrLet(HStatus.ServiceUnavailable, "too many sessions") fact (tk)
       } catch {
         case e: Exception =>
-          onError(e)
-         dummy
+          future { onError(e) }
       }
     } else {
       if (app.keepAlive && in.header.get.isPersistent) {
@@ -207,22 +207,21 @@ private class HAcceptor(
       }
 
       try {
-        thelet.act(tk)
+        thelet.fact(tk)
       } catch {
         case e: Exception =>
           onError(e) // reporting HLet errors
           try {
-            reset {
-              new let.ErrLet(HStatus.InternalServerError).act(tk)
-            }
+            new let.ErrLet(HStatus.InternalServerError) fact (tk)
           } // connection can be closed here...
           catch {
             case _: Exception => // ...and "header is already sent" will be arised; don't report it.
+              future {}
           }
       }
     }
 
-    tk.close
+    f map (_ => tk.close)
   }
 
   def resolveAppLet: Unit = in.appLet match {

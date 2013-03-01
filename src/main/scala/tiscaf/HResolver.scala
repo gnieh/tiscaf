@@ -28,9 +28,9 @@ private object HResolver {
     val hLet = new let.ErrLet(HStatus.NotFound)
   }
 
-  def resolve(apps : Seq[HApp], req : HReqData) : (HApp, HLet[_]) = {
+  def resolve(apps : Seq[HApp], req : HReqData) : (HApp, HLet) = {
     @scala.annotation.tailrec
-    def doFind(rest : Seq[HApp]) : (HApp, HLet[_]) = rest match {
+    def doFind(rest : Seq[HApp]) : (HApp, HLet) = rest match {
       case Seq() => (errApp, errApp.hLet)
       case Seq(a, _*) => a.resolve(req) match {
         case Some(let) => (a, let)

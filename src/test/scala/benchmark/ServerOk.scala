@@ -37,9 +37,9 @@ object ServerOk extends HServer {
     def resolve(req: HReqData) = Some(Let)
   } 
 
-  object Let extends HLet[Nothing]  {
+  object Let extends HSimpleLet {
     private val bytes = "Ok".getBytes("UTF-8")
-    def act(tk: HTalk) = {
+    def act(tk: HTalk) {
       tk.setContentLength(bytes.size)
         .setContentType("text/plain; charset=UTF-8")
         .setContentLength(bytes.length) // if not buffered
