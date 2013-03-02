@@ -28,15 +28,18 @@ object Test extends App with HServer {
 
   object resumeLet extends HSimpleLet {
     def act(talk: HTalk) {
-      pending foreach (_.resume(next))
-      pending.clear
+      val toRemove = pending map { s =>
+        s.resume(next)
+        s
+      }
+      pending --= toRemove
       talk.setContentLength(3).write("ok\n")
     }
   }
 
-  class SuspendLet(path: String) extends HSuspendableLet {
+  class SuspendLet(path: String) extends HLet with HSuspendable {
 
-    def fact(talk: HTalk)(implicit executionContext: ExecutionContext) = {
+    def aact(talk: HTalk)(implicit executionContext: ExecutionContext) = {
 
       println("path: " + path)
 

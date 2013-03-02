@@ -28,9 +28,10 @@ trait HLet {
   /** This method contains the actual (suspendable) computation.
    *  The given `talk` parameter contains the methods to access the request and
    *  session data, as well as the method to send the response to the client.
+   *  This method is called asynchronously (hence the name `aact`)
    *  @see [[tiscaf.HTalk]]
    */
-  def fact(talk: HTalk)(implicit executionContext: ExecutionContext): Future[Unit]
+  def aact(talk: HTalk)(implicit executionContext: ExecutionContext): Future[Unit]
 
   //-------------------- to override ------------------------
 
@@ -133,13 +134,12 @@ class Suspended[T] {
  *  `suspend` call.
  *
  */
-trait HSuspendableLet extends HLet {
+trait HSuspendable {
 
   //------------------- to implement ------------------------
 
-  /** This method is called whenever the suspend method is called.
-   *  Implementor may choose what how to store the promise whenever the computation
-   *  is suspended. */
+  /** This method is called whenever the `suspend` method is called.
+   *  Implementer may choose how to store the suspended computation. */
   protected def onSuspend[T: Manifest](promise: Suspended[T])
 
   //------------------------ few helpers --------------------
@@ -162,7 +162,7 @@ trait HSuspendableLet extends HLet {
  *  @author Lucas Satabin */
 trait HSimpleLet extends HLet {
 
-  final override def fact(talk: HTalk)(implicit executionContext: ExecutionContext) = future {
+  final override def aact(talk: HTalk)(implicit executionContext: ExecutionContext) = future {
     act(talk)
   }
 
