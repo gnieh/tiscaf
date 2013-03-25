@@ -25,7 +25,7 @@ object TimeServer extends HServer with App {
 
   def ports = Set(8080)
 
-  // do not start the daemon stop thread
+  // do not start the stop thread
   override protected def startStopListener { }
 
   start
@@ -63,11 +63,11 @@ object StaticApp extends HApp {
 
   override def buffered : Boolean  = true // ResourceLet needs buffered or chunked be set
 
-  object StaticLet extends let.ResourceLet {
-    protected def dirRoot          = ""
-    override protected def uriRoot = ""
-    override protected def indexes = List("index.html")
-  }
-
   def resolve(req: HReqData) = Some(StaticLet) // generates 404 if resource not found
+}
+
+object StaticLet extends let.ResourceLet {
+  protected def dirRoot          = ""
+  override protected def uriRoot = ""
+  override protected def indexes = List("index.html")
 }
