@@ -7,7 +7,7 @@ object TiscafProject extends Build {
     organization := "org.gnieh",
     name := "tiscaf",
     version := "0.8-SNAPSHOT",
-    scalaVersion := "2.10.0",
+    scalaVersion in ThisBuild := "2.10.0",
     crossScalaVersions := Seq("2.9.3", "2.10.0"),
     libraryDependencies ++= dependencies,
     features)
@@ -66,5 +66,9 @@ object TiscafProject extends Build {
           <name>Andrew Gaydenko</name>
         </developer>
       </developers>))
+
+  /** Example projects */
+  lazy val timeserver =
+    Project("timeserver", new File("examples/time")) dependsOn(tiscaf)
 
 }
