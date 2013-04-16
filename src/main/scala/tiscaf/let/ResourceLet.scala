@@ -64,7 +64,7 @@ trait ResourceLet extends HSimpleLet {
   //-------------------- init ------------------------------
 
   // starts and ends with "/"
-  private val theDirRoot: String = "/" + dirRoot + { if (dirRoot.endsWith("/")) "" else "/" }
+  private val theDirRoot: String = "/" + dirRoot + { if (dirRoot.endsWith("/") || dirRoot.isEmpty) "" else "/" }
 
   private val theUriRoot = { // remove leading and trailing "/"
     val anUri = uriRoot
