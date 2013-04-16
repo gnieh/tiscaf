@@ -206,9 +206,7 @@ private class HAcceptor(
         tk.setHeader("Connection", "close").removeHeader("Keep-Alive")
       }
 
-      try {
-        thelet aact (tk)
-      } catch {
+      thelet aact (tk) recoverWith {
         case e: Exception =>
           onError(e) // reporting HLet errors
           try {
@@ -222,6 +220,7 @@ private class HAcceptor(
     }
 
     f map (_ => tk.close)
+
   }
 
   def resolveAppLet: Unit = in.appLet match {
