@@ -55,7 +55,7 @@ trait FsLet extends HSimpleLet {
 
   // force trailing slash
   private val theDirRoot: String = {
-    val tmp = (new File(dirRoot)).getCanonicalPath.replace("\\\\", "/")
+    val tmp = (new File(dirRoot)).getCanonicalPath.replace("\\\\", "/").replace("\\","/")
     if (tmp.endsWith("/")) tmp else tmp + "/"
   }
   // remove leading and trailing slashes
@@ -74,7 +74,7 @@ trait FsLet extends HSimpleLet {
       val path = theDirRoot + { if (pathRest.startsWith("/")) pathRest.substring(1) else pathRest }
       val f = new File(path)
 
-      if ((f.getCanonicalPath.replace("\\\\", "/") + "/").startsWith(theDirRoot) && f.exists) {
+      if ((f.getCanonicalPath.replace("\\\\", "/").replace("\\","/") + "/").startsWith(theDirRoot) && f.exists) {
         if (f.isDirectory) {
           // try indexes first - before direcory listing
           if (theUriRoot.isEmpty || tk.req.uriPath.endsWith("/")) indexes.find { index =>
