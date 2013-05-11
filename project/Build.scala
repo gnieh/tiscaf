@@ -23,7 +23,12 @@ object TiscafProject extends Build {
         OsgiKeys.additionalHeaders := Map (
           "Bundle-Name" -> "Tiscaf HTTP Server"
         ),
-        OsgiKeys.privatePackage := Seq()
+        OsgiKeys.privatePackage := Seq(),
+        OsgiKeys.requireBundle <<= scalaVersion apply { v =>
+          Seq(
+            "scala-library;bundle-version=" + v
+          )
+        }
       )
       settings (publishSettings : _*))
 
