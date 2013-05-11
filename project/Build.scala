@@ -1,5 +1,7 @@
 import sbt._
 import Keys._
+import com.typesafe.sbt.osgi.SbtOsgi._
+import com.typesafe.sbt.osgi.OsgiKeys
 
 object TiscafProject extends Build {
 
@@ -10,7 +12,19 @@ object TiscafProject extends Build {
     scalaVersion in ThisBuild := "2.10.0",
     crossScalaVersions := Seq("2.9.3", "2.10.0"),
     libraryDependencies ++= dependencies,
+    resourceDirectories in Compile := List(),
     features)
+      settings(defaultOsgiSettings: _*)
+      settings(
+        OsgiKeys.exportPackage := Seq(
+          "tiscaf",
+          "tiscaf.*"
+        ),
+        OsgiKeys.additionalHeaders := Map (
+          "Bundle-Name" -> "Tiscaf HTTP Server"
+        ),
+        OsgiKeys.privatePackage := Seq()
+      )
       settings (publishSettings : _*))
 
   def features = scalacOptions <++= scalaVersion map { v => if (v.startsWith("2.10"))
