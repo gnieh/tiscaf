@@ -2,24 +2,39 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>tiscaf.sync</title>
+          <title>sync - tiscaf.sync</title>
+          <meta name="description" content="sync - tiscaf.sync" />
+          <meta name="keywords" content="sync tiscaf.sync" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link type="text/css" media="screen" rel="stylesheet" href="../../lib/template.css" />
-      <script type="text/javascript" src="../../lib/jquery.js"></script>
+      <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../lib/jquery.js" id="jquery-js"></script>
       <script type="text/javascript" src="../../lib/jquery-ui.js"></script>
       <script type="text/javascript" src="../../lib/template.js"></script>
       <script type="text/javascript" src="../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../index.html';
+            var hash = 'tiscaf.sync.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
     
         </head>
-        <body onload="sh_highlightDocument('../lib/', '.min.js');" class="value">
+        <body class="value">
       <div id="definition">
         <img src="../../lib/package_big.png" />
-        <p id="owner"><a name="tiscaf" class="extype" href="../package.html">tiscaf</a></p>
+        <p id="owner"><a href="../package.html" class="extype" name="tiscaf">tiscaf</a></p>
         <h1>sync</h1>
       </div>
 
-      <h4 class="signature" id="signature">
+      <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">package</span>
@@ -29,11 +44,11 @@
       </span>
       </h4>
       
-      <div class="fullcommenttop" id="comment"></div>
-    
+          <div id="comment" class="fullcommenttop"></div>
+        
 
       <div id="mbrsel">
-        <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
         
         
         <div id="visbl">
@@ -46,9 +61,10 @@
         <div id="allMembers">
         
 
-        <div class="types members" id="types">
+        <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li visbl="pub" name="tiscaf.sync.SyncBool" data-isabs="false">
+              <ol><li name="tiscaf.sync.SyncBool" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SyncBoolextendsObject"></a>
       <a id="SyncBool:SyncBool"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -56,11 +72,12 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SyncBool.html"><span class="name">SyncBool</span></a><span class="result"> extends AnyRef</span>
+        <a href="SyncBool.html"><span class="name">SyncBool</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="tiscaf.sync.SyncExe" data-isabs="false">
+    </li><li name="tiscaf.sync.SyncExe" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SyncExeextendsObject"></a>
       <a id="SyncExe:SyncExe"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -68,31 +85,33 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SyncExe.html"><span class="name">SyncExe</span></a><span class="result"> extends AnyRef</span>
+        <a href="SyncExe.html"><span class="name">SyncExe</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="tiscaf.sync.SyncField" data-isabs="false">
-      <a id="SyncField:SyncField[T]"></a>
+    </li><li name="tiscaf.sync.SyncField" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SyncField[T]extendsObject"></a>
+      <a id="SyncField[T]:SyncField[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SyncField.html"><span class="name">SyncField</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends AnyRef</span>
+        <a href="SyncField.html"><span class="name">SyncField</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="tiscaf.sync.SyncQu" data-isabs="false">
-      <a id="SyncQu:SyncQu[T]"></a>
+    </li><li name="tiscaf.sync.SyncQu" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SyncQu[T]extendsObject"></a>
+      <a id="SyncQu[T]:SyncQu[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SyncQu.html"><span class="name">SyncQu</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends AnyRef</span>
+        <a href="SyncQu.html"><span class="name">SyncQu</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
@@ -101,9 +120,10 @@
 
         
 
-        <div class="values members" id="values">
+        <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="tiscaf.sync.Sync" data-isabs="false">
+              <ol><li name="tiscaf.sync.Sync" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Sync"></a>
       <a id="Sync:Sync"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -111,7 +131,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Sync$.html"><span class="name">Sync</span></a><span class="result"> extends AnyRef</span>
+        <a href="Sync$.html"><span class="name">Sync</span></a>
       </span>
       </h4>
       
@@ -119,10 +139,20 @@
             </div>
 
         
+
+        
         </div>
 
         <div id="inheritedMembers">
         
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
         </div>
 
       </div>

@@ -2,24 +2,39 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>tiscaf.let</title>
+          <title>let - tiscaf.let</title>
+          <meta name="description" content="let - tiscaf.let" />
+          <meta name="keywords" content="let tiscaf.let" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link type="text/css" media="screen" rel="stylesheet" href="../../lib/template.css" />
-      <script type="text/javascript" src="../../lib/jquery.js"></script>
+      <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../lib/jquery.js" id="jquery-js"></script>
       <script type="text/javascript" src="../../lib/jquery-ui.js"></script>
       <script type="text/javascript" src="../../lib/template.js"></script>
       <script type="text/javascript" src="../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../index.html';
+            var hash = 'tiscaf.let.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
     
         </head>
-        <body onload="sh_highlightDocument('../lib/', '.min.js');" class="value">
+        <body class="value">
       <div id="definition">
         <img src="../../lib/package_big.png" />
-        <p id="owner"><a name="tiscaf" class="extype" href="../package.html">tiscaf</a></p>
+        <p id="owner"><a href="../package.html" class="extype" name="tiscaf">tiscaf</a></p>
         <h1>let</h1>
       </div>
 
-      <h4 class="signature" id="signature">
+      <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">package</span>
@@ -29,11 +44,11 @@
       </span>
       </h4>
       
-      <div class="fullcommenttop" id="comment"></div>
-    
+          <div id="comment" class="fullcommenttop"></div>
+        
 
       <div id="mbrsel">
-        <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
         
         
         <div id="visbl">
@@ -46,9 +61,10 @@
         <div id="allMembers">
         
 
-        <div class="types members" id="types">
+        <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li visbl="prt" name="tiscaf.let.DirLet" data-isabs="false">
+              <ol><li name="tiscaf.let.DirLet" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DirLetextendsHSimpleLet"></a>
       <a id="DirLet:DirLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -56,11 +72,12 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="DirLet.html"><span class="name">DirLet</span></a><span class="result"> extends HLet[Nothing]</span>
+        <a href="DirLet.html"><span class="name">DirLet</span></a><span class="result"> extends <a href="../HSimpleLet.html" class="extype" name="tiscaf.HSimpleLet">HSimpleLet</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
-    </li><li visbl="pub" name="tiscaf.let.ErrLet" data-isabs="false">
+    </li><li name="tiscaf.let.ErrLet" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ErrLetextendsHSimpleLet"></a>
       <a id="ErrLet:ErrLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -68,11 +85,12 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="ErrLet.html"><span class="name">ErrLet</span></a><span class="result"> extends HLet[Nothing]</span>
+        <a href="ErrLet.html"><span class="name">ErrLet</span></a><span class="result"> extends <a href="../HSimpleLet.html" class="extype" name="tiscaf.HSimpleLet">HSimpleLet</a></span>
       </span>
       </h4>
-      
-    </li><li visbl="prt" name="tiscaf.let.FiLet" data-isabs="false">
+      <p class="comment cmt">Always send the given error as response.</p>
+    </li><li name="tiscaf.let.FiLet" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="FiLetextendsHSimpleLet"></a>
       <a id="FiLet:FiLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -80,11 +98,12 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="FiLet.html"><span class="name">FiLet</span></a><span class="result"> extends HLet[Nothing]</span>
+        <a href="FiLet.html"><span class="name">FiLet</span></a><span class="result"> extends <a href="../HSimpleLet.html" class="extype" name="tiscaf.HSimpleLet">HSimpleLet</a></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
-    </li><li visbl="pub" name="tiscaf.let.FsLet" data-isabs="true">
+    </li><li name="tiscaf.let.FsLet" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="FsLetextendsHSimpleLet"></a>
       <a id="FsLet:FsLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -92,11 +111,12 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="FsLet.html"><span class="name">FsLet</span></a><span class="result"> extends HLet[Nothing]</span>
+        <a href="FsLet.html"><span class="name">FsLet</span></a><span class="result"> extends <a href="../HSimpleLet.html" class="extype" name="tiscaf.HSimpleLet">HSimpleLet</a></span>
       </span>
       </h4>
-      
-    </li><li visbl="pub" name="tiscaf.let.RedirectLet" data-isabs="false">
+      <p class="comment cmt">Simply serve static content from the file system.</p>
+    </li><li name="tiscaf.let.RedirectLet" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RedirectLetextendsHSimpleLet"></a>
       <a id="RedirectLet:RedirectLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -104,11 +124,12 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="RedirectLet.html"><span class="name">RedirectLet</span></a><span class="result"> extends HLet[Nothing]</span>
+        <a href="RedirectLet.html"><span class="name">RedirectLet</span></a><span class="result"> extends <a href="../HSimpleLet.html" class="extype" name="tiscaf.HSimpleLet">HSimpleLet</a></span>
       </span>
       </h4>
-      
-    </li><li visbl="pub" name="tiscaf.let.ResourceLet" data-isabs="true">
+      <p class="comment cmt">Redirect (send a moved permanently code) to a fix URI.</p>
+    </li><li name="tiscaf.let.ResourceLet" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ResourceLetextendsHSimpleLet"></a>
       <a id="ResourceLet:ResourceLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -116,12 +137,14 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="ResourceLet.html"><span class="name">ResourceLet</span></a><span class="result"> extends HLet[Nothing]</span>
+        <a href="ResourceLet.html"><span class="name">ResourceLet</span></a><span class="result"> extends <a href="../HSimpleLet.html" class="extype" name="tiscaf.HSimpleLet">HSimpleLet</a></span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Serve static resources that are present in the classpath</p>
     </li></ol>
             </div>
+
+        
 
         
 
@@ -132,6 +155,14 @@
 
         <div id="inheritedMembers">
         
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
         </div>
 
       </div>
