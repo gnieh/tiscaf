@@ -82,6 +82,12 @@ trait HServer {
   /** Returns the maximum upload size allowed. */
   protected def maxPostDataLength: Int = 65536 // for POST other than multipart/form-data
 
+  /** Executed at the end of the server is started */
+  protected def onStart: Unit = {}
+
+  /** Executed before the server is stopped */
+  protected def onStop: Unit = {}
+
   /** Starts the stop listener.
    *  Override if you want more elaborated shutdown procedure
    *  (and replace tiscaf.HStop)
@@ -104,7 +110,7 @@ trait HServer {
   //-------------------------- user API ---------------------------------
 
   /** Starts the server. */
-  final def start: Unit = synchronized {
+  def start: Unit = synchronized {
     if (isStopped.get) {
       plexer.start
       ports.foreach { port => plexer.addListener(peerFactory, port) }
@@ -114,6 +120,7 @@ trait HServer {
         ssl.port
       }
       startStopListener
+      onStart
       isStopped.set(false)
       println(name + " server was started on port(s) " + (ports.toList ++ sslPorts).sortBy(x => x).mkString(", "))
     } else sys.error("the server is already started")
@@ -123,6 +130,7 @@ trait HServer {
   def stop: Unit = synchronized {
     if (!isStopped.get) {
       isStopped.set(true)
+      onStop
       talksExe.stopAccepting
       Thread.sleep(interruptTimeoutMillis)
       talksExe.shutdown
