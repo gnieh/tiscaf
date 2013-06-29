@@ -48,6 +48,8 @@ object HReqType extends Enumeration {
   val PostOctets = Value("POST/application/octet-stream")
   val PostMulti = Value("POST/multipart/form-data")
   val Delete = Value("DELETE")
+  val Options = Value("OPTIONS")
+  val Head = Value("HEAD")
 }
 
 private class HAddress(val uriPath : String, val uriExt : Option[String], val query : String)
@@ -125,10 +127,12 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
     val parts = s.split(" ")
     if (parts.length != 3 /* method uri protocol */ ) HReqType.Invalid else {
       parts(0).trim match {
-        case "GET"    => HReqType.Get
-        case "POST"   => parsePostMethod
-        case "DELETE" => HReqType.Delete
-        case _        => HReqType.Invalid
+        case "GET"     => HReqType.Get
+        case "POST"    => parsePostMethod
+        case "DELETE"  => HReqType.Delete
+        case "OPTIONS" => HReqType.Options
+        case "HEAD"    => HReqType.Head
+        case _         => HReqType.Invalid
       }
     }
   }

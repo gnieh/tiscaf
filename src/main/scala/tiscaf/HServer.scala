@@ -76,6 +76,10 @@ trait HServer {
   /** Returns the time a shutdown process let the HLets a chance to finish properly. */
   def interruptTimeoutMillis: Int = 1000 // at shutdown process take HLets a chance to finish 
 
+  /** The list of defaults headers that are set by the server for each request.
+   *  Each let may override (or remove) them later */
+  def defaultHeaders: Map[String, String] = Map()
+
   /** Called when an uncatched error is thrown. You may delegate to the log system of your choice. */
   protected def onError(e: Throwable): Unit = e.printStackTrace
 
@@ -175,7 +179,13 @@ trait HServer {
           implicit def executionContext = HServer.this.executionContext
 
           val acceptor =
-            new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)
+            new HAcceptor(
+              new HWriter(self),
+              apps,
+              HServer.this.connectionTimeoutSeconds,
+              HServer.this.onError,
+              maxPostDataLength,
+              defaultHeaders)
 
           def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
         }
@@ -193,7 +203,13 @@ trait HServer {
           implicit def executionContext = HServer.this.executionContext
 
           val acceptor =
-            new HAcceptor(new HWriter(self), apps, HServer.this.connectionTimeoutSeconds, HServer.this.onError, maxPostDataLength)
+            new HAcceptor(
+              new HWriter(self),
+              apps,
+              HServer.this.connectionTimeoutSeconds,
+              HServer.this.onError,
+              maxPostDataLength,
+              defaultHeaders)
 
           def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
         }

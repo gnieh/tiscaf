@@ -51,6 +51,8 @@ final class HTalk(data : HTalkData) {
   def setCharacterEncoding(charset : String) : HTalk = setHeader("Character-Encoding", charset)
   def setContentType(cType : String) : HTalk = setHeader("Content-Type", cType)
 
+  def headers : Map[String, String] = data.headers
+
   // output
   def write(ar : Array[Byte], offset : Int, length : Int) : HTalk = { out.write(ar, offset, length); this }
   def write(ar : Array[Byte]) : HTalk = write(ar, 0, ar.length)
@@ -101,7 +103,7 @@ final class HTalk(data : HTalkData) {
 
   private[tiscaf] def close : PeerWant.Value = out.close
 
-  private val resp = new HResponse
+  private val resp = new HResponse(headers)
   private val session : Option[HSess] =
     if (ses.tracking == HTracking.NotAllowed) None
     else Some(new HSess(data, resp))

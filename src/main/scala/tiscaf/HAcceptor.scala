@@ -25,6 +25,8 @@ private object HReqState extends Enumeration {
 }
 
 private class HConnData {
+  self =>
+
   import scala.collection.{ mutable => mute }
   var reqState: HReqState.Value = HReqState.WaitsForHeader
   var tail: Array[Byte] = new Array[Byte](0)
@@ -34,13 +36,15 @@ private class HConnData {
   var appLet: Option[(HApp, HLet)] = None
   var octetStream: Option[Array[Byte]] = None
   var parts: Option[HPartData] = None
+  var headers: Map[String, String] = Map()
 
   def toTalkData(aWriter: HWriter): HTalkData = new HTalkData {
-    def header = HConnData.this.header.get
-    def parMap = Map[String, Seq[String]]() ++ HConnData.this.parMap
-    def app = HConnData.this.appLet.get._1
-    def octets = HConnData.this.octetStream
+    def header = self.header.get
+    def parMap = Map[String, Seq[String]]() ++ self.parMap
+    def app = self.appLet.get._1
+    def octets = self.octetStream
     def writer = aWriter
+    def headers = self.headers
   }
 
   def reset: Unit = {
@@ -52,6 +56,7 @@ private class HConnData {
     appLet = None
     octetStream = None
     parts = None
+    headers = Map()
   }
 }
 
@@ -61,6 +66,7 @@ private trait HTalkData {
   def app: HApp
   def octets: Option[Array[Byte]]
   def writer: HWriter
+  def headers: Map[String, String]
 
   def aliveReq = try { header.isPersistent } catch { case _: Exception => false }
 }
@@ -70,10 +76,14 @@ private class HAcceptor(
     apps: Seq[HApp],
     connectionTimeout: Int,
     onError: Throwable => Unit,
-    maxPostDataLength: Int)(
+    maxPostDataLength: Int,
+    headers: Map[String, String])(
       implicit executionContext: ExecutionContext) {
 
   val in = new HConnData
+
+  // set default headers
+  in.headers = headers
 
   def accept(bytes: Array[Byte]): Unit = {
     in.tail = in.tail ++ bytes
@@ -107,6 +117,8 @@ private class HAcceptor(
         in.header.get.reqType match {
           case HReqType.Get        => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
           case HReqType.Delete     => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
+          case HReqType.Options    => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
+          case HReqType.Head       => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
           case HReqType.PostData   => parseParams(in.header.get.query); inData
           case HReqType.PostOctets => parseParams(in.header.get.query); inOctets
           case HReqType.PostMulti  => parseParams(in.header.get.query); inParts
