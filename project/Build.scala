@@ -14,7 +14,7 @@ object TiscafProject extends Build {
     libraryDependencies ++= dependencies,
     resourceDirectories in Compile := List(),
     features)
-      settings(defaultOsgiSettings: _*)
+      settings(osgiSettings: _*)
       settings(
         OsgiKeys.exportPackage := Seq(
           "tiscaf",
