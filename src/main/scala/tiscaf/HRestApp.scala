@@ -35,6 +35,8 @@ class HRestApp extends HApp {
       case HReqType.PostData | HReqType.PostMulti | HReqType.PostOctets =>
         postHandler
       case HReqType.Delete => deleteHandler
+      case HReqType.Put    => putHandler
+      case HReqType.Patch  => patchHandler
       case _               => throw new RuntimeException("Unknown request type")
     }
 
@@ -51,6 +53,10 @@ class HRestApp extends HApp {
 
   private val postHandler =
     ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
+  private val putHandler =
+    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
+  private val patchHandler =
+    ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
   private val getHandler =
     ListBuffer.empty[PartialFunction[(List[String], HReqData), HLet]]
   private val deleteHandler =
@@ -66,6 +72,14 @@ class HRestApp extends HApp {
 
   def delete(handler : PartialFunction[(List[String], HReqData), HLet]) {
     deleteHandler += handler
+  }
+
+  def put(handler : PartialFunction[(List[String], HReqData), HLet]) {
+    putHandler += handler
+  }
+
+  def patch(handler : PartialFunction[(List[String], HReqData), HLet]) {
+    patchHandler += handler
   }
 
   private def splitPath(path : String) =

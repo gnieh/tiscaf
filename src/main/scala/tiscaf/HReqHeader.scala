@@ -47,6 +47,8 @@ object HReqType extends Enumeration {
   val PostData = Value("POST/application/x-www-form-urlencoded")
   val PostOctets = Value("POST/application/octet-stream")
   val PostMulti = Value("POST/multipart/form-data")
+  val Put = Value("PUT")
+  val Patch = Value("PATCH")
   val Delete = Value("DELETE")
   val Options = Value("OPTIONS")
   val Head = Value("HEAD")
@@ -129,6 +131,8 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
       parts(0).trim match {
         case "GET"     => HReqType.Get
         case "POST"    => parsePostMethod
+        case "PUT"     => parsePutMethod
+        case "PATCH"   => parsePatchMethod
         case "DELETE"  => HReqType.Delete
         case "OPTIONS" => HReqType.Options
         case "HEAD"    => HReqType.Head
@@ -151,7 +155,7 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
       new HAddress(extParts(0), None, query)
   }
 
-  private def parsePostMethod : HReqType.Value = contentLength match {
+  private def parsePostMethod: HReqType.Value = contentLength match {
     case None => HReqType.Invalid
     case Some(le) => pairs.get("content-type") match {
       case None => HReqType.Invalid
@@ -170,6 +174,18 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
       }
     }
   }
+
+  private def parsePutMethod: HReqType.Value =
+    if(contentLength.isDefined && pairs.get("content-type").isDefined)
+      HReqType.Put
+    else
+      HReqType.Invalid
+
+  private def parsePatchMethod: HReqType.Value =
+    if(contentLength.isDefined && pairs.get("content-type").isDefined)
+      HReqType.Patch
+    else
+      HReqType.Invalid
 
   private def parseBoundary : Option[String] = reqType match {
     case HReqType.PostMulti => pairs.get("content-type") match {

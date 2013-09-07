@@ -53,7 +53,9 @@ trait HReqData {
   def asFloat(key : String) : Option[Float]
   def asDouble(key : String) : Option[Double]
 
-  // POST/application/octet-stream case
+  // POST/application/octet-stream
+  // PUT
+  // PATCH
   def octets : Option[Array[Byte]]
 }
 
@@ -96,7 +98,9 @@ object HReqData {
     def asFloat(key : String) : Option[Float] = try { Some(param(key).get.toFloat) } catch { case _: Exception => None }
     def asDouble(key : String) : Option[Double] = try { Some(param(key).get.toDouble) } catch { case _: Exception => None }
 
-    // POST/application/octet-stream case
+    // POST/application/octet-stream
+    // PUT
+    // PATCH
     def octets : Option[Array[Byte]] = data.octets
 
     private def encode(s : String) = try { java.net.URLEncoder.encode(s, data.app.encoding) } catch { case _: Exception => s }

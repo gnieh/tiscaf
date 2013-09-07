@@ -122,6 +122,8 @@ private class HAcceptor(
           case HReqType.PostData   => parseParams(in.header.get.query); inData
           case HReqType.PostOctets => parseParams(in.header.get.query); inOctets
           case HReqType.PostMulti  => parseParams(in.header.get.query); inParts
+          case HReqType.Put        => parseParams(in.header.get.query); inOctets
+          case HReqType.Patch      => parseParams(in.header.get.query); inOctets
           case HReqType.Invalid    => in.reqState = HReqState.IsInvalid
         }
       }
