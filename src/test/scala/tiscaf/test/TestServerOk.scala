@@ -4,6 +4,8 @@ package test
 import org.scalatest._
 
 import dispatch._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 class TestServerOk extends FlatSpec with ShouldMatchers with BeforeAndAfterAll {
   object server extends HServer {

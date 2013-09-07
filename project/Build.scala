@@ -39,11 +39,8 @@ object TiscafProject extends Build {
   }
 
   def dependencies = Seq(
-    /*"org.scalatest" %% "scalatest" % "2.0.M5" % "test" cross CrossVersion.binaryMapped {
-      case "2.9.3" => "2.9.0"
-      case v => v
-    },
-    "net.databinder.dispatch" %% "dispatch-core" % "0.8.10" % "test"*/
+    "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
+    "net.databinder.dispatch" %% "dispatch-core" % "0.11.0" % "test"
   )
 
   def publishSettings : Seq[Setting[_]] = Seq(
