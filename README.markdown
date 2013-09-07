@@ -29,7 +29,7 @@ Features
  - static content - file system and in-jar resources retrieving is supported out of the box (with files/directories browsing).
  - connections - persistent and SSL/TLS (experimental) connections are supported.
  - output - raw (content-length is known), buffered, gzipped (as a case of buffered), chunked - all modes are supported.
- - methods - POST/urlencoded, POST/multipart (with falling POST back to octets), GET and DELETE methods are supported.
+ - methods - POST/urlencoded, POST/multipart (with falling POST back to octets), PUT, PATCH, GET and DELETE methods are supported.
  - sessions - via URI path extensions or cookies are supported.
  - config files - are absent.
  - depends on - nothing (again: nothing).
