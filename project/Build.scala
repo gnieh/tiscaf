@@ -9,8 +9,8 @@ object TiscafProject extends Build {
     organization := "org.gnieh",
     name := "tiscaf",
     version := "0.8-SNAPSHOT",
-    scalaVersion in ThisBuild := "2.10.0",
-    crossScalaVersions := Seq("2.9.3", "2.10.0"),
+    scalaVersion in ThisBuild := "2.10.2",
+    crossScalaVersions := Seq("2.9.3", "2.10.2"),
     libraryDependencies ++= dependencies,
     resourceDirectories in Compile := List(),
     features)
@@ -39,14 +39,11 @@ object TiscafProject extends Build {
   }
 
   def dependencies = Seq(
-    "org.scalatest" %% "scalatest" % "2.0.M5" % "test" cross CrossVersion.binaryMapped {
+    /*"org.scalatest" %% "scalatest" % "2.0.M5" % "test" cross CrossVersion.binaryMapped {
       case "2.9.3" => "2.9.0"
       case v => v
     },
-    "net.databinder.dispatch" %% "dispatch-core" % "0.9.5" % "test" cross CrossVersion.binaryMapped {
-      case "2.9.3" => "2.9.2"
-      case "2.10.0" => "2.10"
-    }
+    "net.databinder.dispatch" %% "dispatch-core" % "0.8.10" % "test"*/
   )
 
   def publishSettings : Seq[Setting[_]] = Seq(
