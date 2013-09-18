@@ -37,6 +37,7 @@ trait HReqHeaderData {
   def isPersistent : Boolean
 
   def contentLength : Option[Long]
+  def contentEncoding : String
   def boundary : Option[String]
 }
 
@@ -77,6 +78,16 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
 
   lazy val contentLength : Option[Long] = try { Some(pairs("content-length").toLong) } catch { case _: Exception => None }
   lazy val boundary = parseBoundary
+  lazy val contentEncoding: String =
+    (for {
+      tpe <- pairs.get("content-type")
+      charset <- tpe.split(";").collectFirst {
+          case charsetRegex(charset) => charset
+      }
+    } yield charset).getOrElse("ISO-8859-1")
+
+
+  private lazy val charsetRegex = """\s*charset\s*=\s*(\S+)\s*""".r
 
   /*
   def toText : String = reqType match {

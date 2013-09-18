@@ -32,6 +32,7 @@ trait HReqData {
   def query : String
   def remoteIp : String
   def contentLength : Option[Long]
+  def contentEncoding : String
 
   // header
   def header(key : String) : Option[String]
@@ -71,6 +72,7 @@ object HReqData {
     def query : String = decode(data.header.query)
     def remoteIp : String = data.writer.remoteIp
     def contentLength : Option[Long] = data.header.contentLength
+    def contentEncoding : String = data.header.contentEncoding
 
     // header
     def header(key : String) : Option[String] = data.header.header(key)
