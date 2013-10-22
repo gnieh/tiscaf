@@ -85,7 +85,7 @@ object HReqData {
       case Seq(x, _*) => Some(x)
       case _          => None
     }
-    def softParam(key : String) : String = param(encode(key)).map(decode).getOrElse("")
+    def softParam(key : String) : String = param(key).getOrElse("")
 
     def asQuery(ignore : Set[String] = Set()) : String = {
       def paramQuery(key : String) = params(key).map(v => { encode(key) + "=" + encode(v) }).mkString("&")
