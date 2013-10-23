@@ -19,6 +19,8 @@ package tiscaf
 
 import scala.collection.{ mutable => mute }
 
+import sync.Sync
+
 // backend map is SynchronizedMap
 final private class HSess(data: HTalkData, resp: HResponse) extends mute.Map[Any, Any] {
 
@@ -99,7 +101,9 @@ private object HSessMonitor {
     case None =>
     case Some(sess) =>
       count.dec(sess.app)
-      sess.app.onSessionInvalidate(sid, sess.bag)
+      Sync.spawn {
+        sess.app.onSessionInvalidate(sid, sess.bag.toMap)
+      }
       bags -= sid
   }
 
