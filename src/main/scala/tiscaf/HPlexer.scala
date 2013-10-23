@@ -1,16 +1,16 @@
 /*******************************************************************************
  * This file is part of tiscaf.
- * 
+ *
  * tiscaf is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Foobar is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with tiscaf.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -28,13 +28,12 @@ import javax.net.ssl._
 
 import sync._
 
-private trait HPlexer {
+private trait HPlexer extends HLoggable {
 
   //---------------------- to implement ------------------------------
 
   def timeoutMillis: Long
   def tcpNoDelay: Boolean
-  def onError(e: Throwable): Unit
   def ssl: List[HSslContext]
 
   //---------------------- SPI ------------------------------------------
@@ -42,11 +41,17 @@ private trait HPlexer {
   final def start = synchronized {
     if (!isWorking.get) {
       isWorking.set(true)
-      Sync.spawnNamed("Plexer") { try { plex } catch { case e: Exception => onError(e) } }
+      Sync.spawnNamed("Plexer") {
+        try {
+          plex
+        } catch {
+          case e: Exception => error("An error occurred when starting the plexer", e)
+        }
+      }
     }
   }
 
-  final def stop: Unit = synchronized { // close once only 
+  final def stop: Unit = synchronized { // close once only
     if (isWorking.get) {
       isWorking.set(false)
       selector.close
@@ -74,7 +79,7 @@ private trait HPlexer {
         }
       } catch {
         case e: java.nio.channels.AsynchronousCloseException =>
-        case e: Exception => onError(e)
+        case e: Exception => error("Something wrong happened with acceptor on port " + port, e)
       }
     } catch {
       case e: java.nio.channels.AsynchronousCloseException =>
@@ -109,7 +114,8 @@ private trait HPlexer {
         }
       } catch {
         case e: java.nio.channels.AsynchronousCloseException =>
-        case e: Exception => onError(e)
+        case e: Exception =>
+          error("Something wrong happened with acceptor on ssl port " + sslData.port, e)
       }
     } catch {
       case e: java.nio.channels.AsynchronousCloseException =>
@@ -166,7 +172,9 @@ private trait HPlexer {
       }
       lastExpire.set(now)
     }
-  } catch { case e: Exception => onError(e) }
+  } catch {
+    case e: Exception => error("A problem occured while closing an expired connection", e)
+  }
 
   // main multiplexer loop
   private def plex: Unit = while (isWorking.get) try {
@@ -189,7 +197,9 @@ private trait HPlexer {
       }
     }
 
-  } catch { case e: Exception => onError(e) }
+  } catch {
+    case e: Exception => error("Something wrong happened in the main loop", e)
+  }
 
 }
 

@@ -75,15 +75,20 @@ private class HAcceptor(
     val writer: HWriter,
     apps: Seq[HApp],
     connectionTimeout: Int,
-    onError: Throwable => Unit,
+    logger: HLoggable,
     maxPostDataLength: Int,
     headers: Map[String, String])(
-      implicit executionContext: ExecutionContext) {
+      implicit executionContext: ExecutionContext) extends HLoggable {
 
   val in = new HConnData
 
   // set default headers
   in.headers = headers
+
+  // HLoggable API
+  protected[tiscaf] def error(msg: String, exn: Exception) = logger.error(msg, exn)
+  protected[tiscaf] def warning(msg: String) = logger.warning(msg)
+  protected[tiscaf] def info(msg: String) = logger.info(msg)
 
   def accept(bytes: Array[Byte]): Unit = {
     in.tail = in.tail ++ bytes
@@ -110,22 +115,26 @@ private class HAcceptor(
     // at least lines with method is expected: 'GET / HTTP/1.1' length is 14
     findEol(14) match {
       case None => in.reqState = HReqState.WaitsForHeader
-      case Some(shift) => if (shift >= maxHeaderLength) in.reqState = HReqState.IsInvalid else {
-        in.header = Some(new HReqHeader(new String(in.tail.take(shift), "ISO-8859-1") split ("\r\n")))
-        in.tail = in.tail.slice(shift + 4, in.tail.length)
+      case Some(shift) =>
+        if (shift >= maxHeaderLength) {
+          warning("Header too long")
+          in.reqState = HReqState.IsInvalid
+        } else {
+          in.header = Some(new HReqHeader(new String(in.tail.take(shift), "ISO-8859-1") split ("\r\n")))
+          in.tail = in.tail.slice(shift + 4, in.tail.length)
 
-        in.header.get.reqType match {
-          case HReqType.Get        => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
-          case HReqType.Delete     => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
-          case HReqType.Options    => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
-          case HReqType.Head       => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
-          case HReqType.PostData   => parseParams(in.header.get.query); inData
-          case HReqType.PostOctets => parseParams(in.header.get.query); inOctets
-          case HReqType.PostMulti  => parseParams(in.header.get.query); inParts
-          case HReqType.Put        => parseParams(in.header.get.query); inOctets
-          case HReqType.Patch      => parseParams(in.header.get.query); inOctets
-          case HReqType.Invalid    => in.reqState = HReqState.IsInvalid
-        }
+          in.header.get.reqType match {
+            case HReqType.Get        => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
+            case HReqType.Delete     => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
+            case HReqType.Options    => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
+            case HReqType.Head       => parseParams(in.header.get.query); in.reqState = HReqState.IsReady
+            case HReqType.PostData   => parseParams(in.header.get.query); inData
+            case HReqType.PostOctets => parseParams(in.header.get.query); inOctets
+            case HReqType.PostMulti  => parseParams(in.header.get.query); inParts
+            case HReqType.Put        => parseParams(in.header.get.query); inOctets
+            case HReqType.Patch      => parseParams(in.header.get.query); inOctets
+            case HReqType.Invalid    => in.reqState = HReqState.IsInvalid
+          }
       }
     }
   }
@@ -133,19 +142,24 @@ private class HAcceptor(
   //post, form data
   private def inData: Unit = {
     val length = in.header.get.contentLength.get.toInt
-    if (length > maxPostDataLength) in.reqState = HReqState.IsInvalid
-    else if (length > in.tail.length) in.reqState = HReqState.WaitsForData
-    else {
+    if (length > maxPostDataLength) {
+      warning("Post data is too big, you may want to increase `HServer.maxPostDataLength`")
+      in.reqState = HReqState.IsInvalid
+    } else if (length > in.tail.length) {
+      in.reqState = HReqState.WaitsForData
+    } else {
       in.reqState = HReqState.IsReady
       parseParams(new String(in.tail.take(length), "ISO-8859-1"))
     }
   }
 
-  // post, unknown content type, falling back to octet mode
+  // post, unknown content type, falling back to octet mode, put, patch
   private def inOctets: Unit = {
     val contentLength = in.header.get.contentLength.get.toInt
-    if (contentLength + in.tail.length > maxPostDataLength) in.reqState = HReqState.IsInvalid
-    else {
+    if (contentLength + in.tail.length > maxPostDataLength) {
+      warning("Request data is too big, you may want to increase `HServer.maxPostDataLength`")
+      in.reqState = HReqState.IsInvalid
+    } else {
       in.octetStream match {
         case None         => in.octetStream = Some(in.tail.take(in.tail.length))
         case Some(octets) => in.octetStream = Some(octets ++ in.tail.take(in.tail.length))
@@ -160,7 +174,9 @@ private class HAcceptor(
   private def inParts: Unit = {
     resolveAppLet
     in.appLet.get._2.partsAcceptor(in.header.get) match {
-      case None => in.reqState = HReqState.IsInvalid
+      case None =>
+        warning("HLet does not define any parts acceptor, and thus cannot accept multipart post request")
+        in.reqState = HReqState.IsInvalid
       case Some(acceptor) =>
         if (in.parts.isEmpty) {
           // at this point tail must have at least --boundary\r\n... or wait for bytes further
@@ -176,12 +192,16 @@ private class HAcceptor(
           in.tail = new Array[Byte](0) // HMulti consumes all the tail
           HMulti.process(in.parts.get) match {
             case HReqState.IsInvalid =>
+              warning("Unable to process parts")
               in.reqState = HReqState.IsInvalid
               in.parts = None
             case x => // HReqState.IsReady or HReqState.WaitsForPart
-              if (in.acceptedTotalLength + in.tail.length > in.header.get.contentLength.get)
+              if (in.acceptedTotalLength + in.tail.length > in.header.get.contentLength.get) {
+                warning("Total read parts length was greater than header specified Content-Length")
                 in.reqState = HReqState.IsInvalid
-              else in.reqState = x
+              } else {
+                in.reqState = x
+              }
           }
         }
     }
@@ -207,11 +227,14 @@ private class HAcceptor(
 
     val f = if ((app.tracking != HTracking.NotAllowed) &&
       (HSessMonitor.count.get(app) >= app.maxSessionsCount)) {
+      warning("Too many open sessions. You may want to increase `HApp.maxSessionsCount`")
       try {
         new tiscaf.let.ErrLet(HStatus.ServiceUnavailable, "too many sessions") aact (tk)
       } catch {
         case e: Exception =>
-          future { onError(e) }
+          future {
+            error("A problem occurred while notifying client", e)
+          }
       }
     } else {
       if (app.keepAlive && in.header.get.isPersistent) {
@@ -222,7 +245,7 @@ private class HAcceptor(
 
       thelet aact (tk) recoverWith {
         case e: Exception =>
-          onError(e) // reporting HLet errors
+          error("An error occurred while executing the HLet", e) // reporting HLet errors
           try {
             new let.ErrLet(HStatus.InternalServerError) aact (tk)
           } // connection can be closed here...

@@ -26,7 +26,7 @@ import scala.concurrent.ExecutionContext
  *   - list of [[tiscaf.HApp]]lications,
  *   - start/stop methods
  */
-trait HServer {
+trait HServer extends HLoggable {
 
   self =>
 
@@ -80,8 +80,33 @@ trait HServer {
    *  Each let may override (or remove) them later */
   def defaultHeaders: Map[String, String] = Map()
 
-  /** Called when an uncatched error is thrown. You may delegate to the log system of your choice. */
-  protected def onError(e: Throwable): Unit = e.printStackTrace
+  /** Called to log a tiscaf internal error.
+   *  '''Note''': This methods is not intended to be called by applications using tiscaf.
+   *  Override it to log using your favorite logging library.
+   *  By default, logs the message and the stack trace to stderr.
+   */
+  protected[tiscaf] def error(msg: String, e: Exception): Unit = {
+    Console.err.println(msg)
+    e.printStackTrace
+  }
+
+  /** Called to log a tiscaf internal warning.
+   *  '''Note''': This methods is not intended to be called by applications using tiscaf.
+   *  Override it to log using your favorite logging library.
+   *  By default, logs the message to stdout.
+   */
+  protected[tiscaf] def warning(msg: String): Unit = {
+    println(msg)
+  }
+
+  /** Called to log a tiscaf internal information.
+   *  '''Note''': This methods is not intended to be called by applications using tiscaf.
+   *  Override it to log using your favorite logging library.
+   *  By default, logs the message to stdout.
+   */
+  protected[tiscaf] def info(msg: String): Unit = {
+    println(msg)
+  }
 
   /** Returns the maximum upload size allowed. */
   protected def maxPostDataLength: Int = 65536 // for POST other than multipart/form-data
@@ -100,7 +125,7 @@ trait HServer {
     // only bind to localhost for stop message
     val serverSocket =
       new java.net.ServerSocket(stopPort, 0, java.net.InetAddress.getByName(stopHost))
-    println(name + " stop listener is listening to port " + stopPort)
+    info(name + " stop listener is listening to port " + stopPort)
     val dataSocket = serverSocket.accept
     val ar = new Array[Byte](256)
     dataSocket.getInputStream.read(ar)
@@ -126,7 +151,7 @@ trait HServer {
       startStopListener
       onStart
       isStopped.set(false)
-      println(name + " server was started on port(s) " + (ports.toList ++ sslPorts).sortBy(x => x).mkString(", "))
+      info(name + " server was started on port(s) " + (ports.toList ++ sslPorts).sortBy(x => x).mkString(", "))
     } else sys.error("the server is already started")
   }
 
@@ -139,7 +164,7 @@ trait HServer {
       Thread.sleep(interruptTimeoutMillis)
       talksExe.shutdown
       plexer.stop
-      println(name + " server stopped")
+      info(name + " server stopped")
     } else sys.error("the server is already stopped")
   }
 
@@ -147,14 +172,19 @@ trait HServer {
 
   // nothing must be started in init, so using few objects and lazy vals
 
-  private lazy val talksExe = new sync.SyncExe(poolSize, queueSize, "ServerExecutorPool", onError)
+  private lazy val talksExe = new sync.SyncExe(poolSize, queueSize, "ServerExecutorPool", error)
   private val timeoutMillis = connectionTimeoutSeconds * 1000L
   private val isStopped = new sync.SyncBool(true)
 
   private object plexer extends HPlexer {
     def timeoutMillis: Long = self.timeoutMillis
     def tcpNoDelay: Boolean = self.tcpNoDelay
-    def onError(e: Throwable): Unit = self.onError(e)
+
+    // HLoggable API
+    protected[tiscaf] def error(msg: String, exn: Exception) = self.error(msg, exn)
+    protected[tiscaf] def warning(msg: String) = self.warning(msg)
+    protected[tiscaf] def info(msg: String) = self.info(msg)
+
     def ssl = self.ssl
   }
 
@@ -172,7 +202,10 @@ trait HServer {
 
           def bufferSize: Int = session.getApplicationBufferSize
 
-          def onError(e: Throwable): Unit = HServer.this.onError(e)
+          // HLoggable API
+          protected[tiscaf] def error(msg: String, exn: Exception) = HServer.this.error(msg, exn)
+          protected[tiscaf] def warning(msg: String) = HServer.this.warning(msg)
+          protected[tiscaf] def info(msg: String) = HServer.this.info(msg)
 
           def engine = sslEngine
 
@@ -183,7 +216,7 @@ trait HServer {
               new HWriter(self),
               apps,
               HServer.this.connectionTimeoutSeconds,
-              HServer.this.onError,
+              self,
               maxPostDataLength,
               defaultHeaders)
 
@@ -198,7 +231,10 @@ trait HServer {
 
           def bufferSize: Int = HServer.this.bufferSize
 
-          def onError(e: Throwable): Unit = HServer.this.onError(e)
+          // HLoggable API
+          protected[tiscaf] def error(msg: String, exn: Exception) = HServer.this.error(msg, exn)
+          protected[tiscaf] def warning(msg: String) = HServer.this.warning(msg)
+          protected[tiscaf] def info(msg: String) = HServer.this.info(msg)
 
           implicit def executionContext = HServer.this.executionContext
 
@@ -207,7 +243,7 @@ trait HServer {
               new HWriter(self),
               apps,
               HServer.this.connectionTimeoutSeconds,
-              HServer.this.onError,
+              self,
               maxPostDataLength,
               defaultHeaders)
 

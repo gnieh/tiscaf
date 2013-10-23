@@ -22,7 +22,7 @@ import javax.net.ssl._
 
 import scala.concurrent.ExecutionContext
 
-private trait HPeer {
+private trait HPeer extends HLoggable {
 
   protected[this] val plexerBarrier = new java.util.concurrent.CyclicBarrier(1)
 
@@ -32,8 +32,6 @@ private trait HPeer {
   def key: SelectionKey
 
   def bufferSize: Int
-
-  def onError(e: Throwable): Unit
 
   val acceptor: HAcceptor
   def submit(toRun: Runnable): Unit
@@ -68,6 +66,7 @@ private trait HPeer {
     @scala.annotation.tailrec
     def nextSelect: Boolean = if (buf.hasRemaining) {
       if (theKey.attachment.asInstanceOf[Long] + plexer.timeoutMillis < System.currentTimeMillis) {
+        warning("Connection timeout")
         tmpSelector.close
         false
       } else {
@@ -121,7 +120,11 @@ private trait HSimplePeer extends HPeer {
       }
       submit(toRun)
     }
-  } catch { case e: Exception => dispose; onError(e) }
+  } catch {
+    case e: Exception =>
+      error("A problem occurred while reading request data", e)
+      dispose
+  }
 
   // ByteBuffer.wrap(ar, offset, length) is slower in my tests rather direct array putting
   final def writeToChannel(ar: Array[Byte], offset: Int, length: Int) = {
@@ -173,7 +176,7 @@ private trait HSslPeer extends HPeer {
       case SSLEngineResult.Status.CLOSED =>
         netBuffer.flip
         channel.write(netBuffer)
-      case st => throw new RuntimeException("Invalid closing state: " + st)
+      case st => sys.error("Invalid closing state: " + st)
     }
     connClose
   }
@@ -226,7 +229,11 @@ private trait HSslPeer extends HPeer {
       }
       submit(toRun)
     }
-  } catch { case e: Exception => dispose; onError(e) }
+  } catch {
+    case e: Exception =>
+      error("A problem occurred while readin ssl request data", e)
+      dispose
+  }
 
   // ByteBuffer.wrap(ar, offset, length) is slower in my tests rather direct array putting
   final def writeToChannel(ar: Array[Byte], offset: Int, length: Int) = {
