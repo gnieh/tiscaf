@@ -87,10 +87,10 @@ trait HServer {
   protected def maxPostDataLength: Int = 65536 // for POST other than multipart/form-data
 
   /** Executed at the end of the server is started */
-  protected def onStart: Unit = {}
+  protected def onStart(): Unit = {}
 
   /** Executed before the server is stopped */
-  protected def onStop: Unit = {}
+  protected def onStop(): Unit = {}
 
   /** Starts the stop listener.
    *  Override if you want more elaborated shutdown procedure
