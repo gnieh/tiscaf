@@ -8,7 +8,7 @@ object TiscafProject extends Build {
   val tiscaf = (Project("tiscaf", file(".")) settings (
     organization := "org.gnieh",
     name := "tiscaf",
-    version := "0.8",
+    version := "0.9-SNAPSHOT",
     description := "Lightweight HTTP Server in and for Scala",
     licenses += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
     homepage := Some(url("https://github.com/gnieh/tiscaf/wiki")),
