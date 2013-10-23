@@ -8,7 +8,10 @@ object TiscafProject extends Build {
   val tiscaf = (Project("tiscaf", file(".")) settings (
     organization := "org.gnieh",
     name := "tiscaf",
-    version := "0.8-SNAPSHOT",
+    version := "0.8",
+    description := "Lightweight HTTP Server in and for Scala",
+    licenses += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
+    homepage := Some(url("https://github.com/gnieh/tiscaf/wiki")),
     scalaVersion in ThisBuild := "2.10.2",
     crossScalaVersions := Seq("2.9.3", "2.10.2"),
     libraryDependencies ++= dependencies,
@@ -53,13 +56,6 @@ object TiscafProject extends Build {
     pomIncludeRepository := { x => false },
     // Maven central wants some extra metadata to keep things 'clean'.
     pomExtra := (
-      <licenses>
-        <license>
-          <name>LGPL</name>
-          <url>http://www.gnu.org/licenses/lgpl.html</url>
-          <distribution>repo</distribution>
-        </license>
-      </licenses>
       <scm>
         <url>git@github.com:gnieh/tiscaf.git</url>
         <connection>scm:git:git@github.com:gnieh/tiscaf.git</connection>
