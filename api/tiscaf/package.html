@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -64,7 +59,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="tiscaf.HApp" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HAppextendsObject"></a>
+      <a id="HAppextendsAnyRef"></a>
       <a id="HApp:HApp"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -78,7 +73,7 @@
       <p class="comment cmt">An application is a group of request handlers (<a href="HLet.html" class="extype" name="tiscaf.HLet">tiscaf.HLet</a>s)
  sharing common behaviour.</p>
     </li><li name="tiscaf.HLet" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HLetextendsObject"></a>
+      <a id="HLetextendsAnyRef"></a>
       <a id="HLet:HLet"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -90,8 +85,21 @@
       </span>
       </h4>
       <p class="comment cmt">Handles an HTTP request and makes some computation that wil eventually termintate .</p>
+    </li><li name="tiscaf.HLoggable" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="HLoggableextendsAnyRef"></a>
+      <a id="HLoggable:HLoggable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="HLoggable.html"><span class="name">HLoggable</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">The tiscaf logging API, used by tiscaf itself to log internal information.</p>
     </li><li name="tiscaf.HPartDescriptor" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HPartDescriptorextendsObject"></a>
+      <a id="HPartDescriptorextendsAnyRef"></a>
       <a id="HPartDescriptor:HPartDescriptor"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -104,7 +112,7 @@
       </h4>
       
     </li><li name="tiscaf.HPartsAcceptor" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HPartsAcceptorextendsObject"></a>
+      <a id="HPartsAcceptorextendsAnyRef"></a>
       <a id="HPartsAcceptor:HPartsAcceptor"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -117,7 +125,7 @@
       </h4>
       <p class="comment cmt">Accepts uploaded files with POST multiparts method.</p>
     </li><li name="tiscaf.HReqData" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HReqDataextendsObject"></a>
+      <a id="HReqDataextendsAnyRef"></a>
       <a id="HReqData:HReqData"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -130,7 +138,7 @@
       </h4>
       <p class="comment cmt">Request data contains following elements:</p>
     </li><li name="tiscaf.HReqHeaderData" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HReqHeaderDataextendsObject"></a>
+      <a id="HReqHeaderDataextendsAnyRef"></a>
       <a id="HReqHeaderData:HReqHeaderData"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -157,7 +165,7 @@
       <p class="comment cmt">This HApp gives to the user some utility methods to easily write
  RESTful services.</p>
     </li><li name="tiscaf.HServer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HServerextendsObject"></a>
+      <a id="HServerextendsHLoggable"></a>
       <a id="HServer:HServer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -165,7 +173,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="HServer.html"><span class="name">HServer</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="HServer.html"><span class="name">HServer</span></a><span class="result"> extends <a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a></span>
       </span>
       </h4>
       <p class="comment cmt">A server provides:</p>
@@ -184,7 +192,7 @@
       <p class="comment cmt">A simple non suspendable <a href="HLet.html" class="extype" name="tiscaf.HLet">tiscaf.HLet</a>
 </p>
     </li><li name="tiscaf.HSslContext" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HSslContextextendsObject"></a>
+      <a id="HSslContextextendsAnyRef"></a>
       <a id="HSslContext:HSslContext"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -197,7 +205,7 @@
       </h4>
       <p class="comment cmt">tiscaf SSL context.</p>
     </li><li name="tiscaf.HStop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="HStopextendsObject"></a>
+      <a id="HStopextendsAnyRef"></a>
       <a id="HStop:HStop"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -210,7 +218,7 @@
       </h4>
       
     </li><li name="tiscaf.HSuspendable" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HSuspendableextendsObject"></a>
+      <a id="HSuspendableextendsAnyRef"></a>
       <a id="HSuspendable:HSuspendable"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -224,7 +232,7 @@
       <p class="comment cmt"> This computation may potentially be suspended at any moment and several times
  by calling the <span class="extype" name="tiscaf.HSuspendableLet">tiscaf.HSuspendableLet</span>#suspend methods.</p>
     </li><li name="tiscaf.HTalk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="HTalkextendsObject"></a>
+      <a id="HTalkextendsAnyRef"></a>
       <a id="HTalk:HTalk"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -237,7 +245,7 @@
       </h4>
       <p class="comment cmt">This is the way an <a href="HLet.html" class="extype" name="tiscaf.HLet">tiscaf.HLet</a> accesses to the world.</p>
     </li><li name="tiscaf.HTree" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="HTreeextendsObject"></a>
+      <a id="HTreeextendsAnyRef"></a>
       <a id="HTree:HTree"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -252,7 +260,7 @@
  (URI nodes correspond to request handlers), you can assign handlers
  to tree nodes in eyes-friendly manner:</p>
     </li><li name="tiscaf.Suspended" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Suspended[T]extendsObject"></a>
+      <a id="Suspended[T]extendsAnyRef"></a>
       <a id="Suspended[T]:Suspended[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -440,7 +448,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

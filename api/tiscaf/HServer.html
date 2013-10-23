@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -40,14 +35,14 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">HServer</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">HServer</span><span class="result"> extends <a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A server provides:</p><ul><li>few common settings,</li><li>list of <a href="HApp.html" class="extype" name="tiscaf.HApp">tiscaf.HApp</a>lications,</li><li>start/stop methods
 </li></ul></div><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="tiscaf.HServer">HServer</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -65,7 +60,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="tiscaf.HServer"><span>HServer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="tiscaf.HServer"><span>HServer</span></li><li class="in" name="tiscaf.HLoggable"><span>HLoggable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -224,8 +219,11 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="tiscaf.HServer#connectionTimeoutSeconds" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -242,6 +240,20 @@
       </h4>
       <p class="shortcomment cmt">Returns the connection timeout.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the connection timeout. It has to purposes:</p><ul><li>a connection without any socket activity during this period will be closed</li><li>if you use (and client wants) 'keep-alive' connection, this period is declared in response header
 </li></ul></div></div>
+    </li><li name="tiscaf.HServer#defaultHeaders" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="defaultHeaders:Map[String,String]"></a>
+      <a id="defaultHeaders:Map[String,String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">defaultHeaders</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The list of defaults headers that are set by the server for each request.</p><div class="fullcomment"><div class="comment cmt"><p>The list of defaults headers that are set by the server for each request.
+ Each let may override (or remove) them later</p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -268,6 +280,23 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="tiscaf.HServer#error" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="error(msg:String,e:Exception):Unit"></a>
+      <a id="error(String,Exception):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">error</span><span class="params">(<span name="msg">msg: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="e">e: <span class="extype" name="scala.Exception">Exception</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Called to log a tiscaf internal error.</p><div class="fullcomment"><div class="comment cmt"><p>Called to log a tiscaf internal error.
+ <b>Note</b>: This methods is not intended to be called by applications using tiscaf.
+ Override it to log using your favorite logging library.
+ By default, logs the message and the stack trace to stderr.
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="package.html" class="extype" name="tiscaf">tiscaf</a>] </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="tiscaf.HServer">HServer</a> → <a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a></dd></dl></div>
     </li><li name="tiscaf.HServer#executionContext" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="executionContext:scala.concurrent.ExecutionContextExecutor"></a>
       <a id="executionContext:ExecutionContextExecutor"></a>
@@ -293,8 +322,11 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -323,6 +355,23 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="tiscaf.HServer#info" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="info(msg:String):Unit"></a>
+      <a id="info(String):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">info</span><span class="params">(<span name="msg">msg: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Called to log a tiscaf internal information.</p><div class="fullcomment"><div class="comment cmt"><p>Called to log a tiscaf internal information.
+ <b>Note</b>: This methods is not intended to be called by applications using tiscaf.
+ Override it to log using your favorite logging library.
+ By default, logs the message to stdout.
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="package.html" class="extype" name="tiscaf">tiscaf</a>] </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="tiscaf.HServer">HServer</a> → <a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a></dd></dl></div>
     </li><li name="tiscaf.HServer#interruptTimeoutMillis" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="interruptTimeoutMillis:Int"></a>
       <a id="interruptTimeoutMillis:Int"></a>
@@ -414,19 +463,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="tiscaf.HServer#onError" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onError(e:Throwable):Unit"></a>
-      <a id="onError(Throwable):Unit"></a>
+    </li><li name="tiscaf.HServer#onStart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onStart():Unit"></a>
+      <a id="onStart():Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onError</span><span class="params">(<span name="e">e: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">onStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Called when an uncatched error is thrown.</p><div class="fullcomment"><div class="comment cmt"><p>Called when an uncatched error is thrown. You may delegate to the log system of your choice.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+      <p class="shortcomment cmt">Executed at the end of the server is started</p><div class="fullcomment"><div class="comment cmt"><p>Executed at the end of the server is started</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="tiscaf.HServer#onStop" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onStop():Unit"></a>
+      <a id="onStop():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Executed before the server is stopped</p><div class="fullcomment"><div class="comment cmt"><p>Executed before the server is stopped</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="tiscaf.HServer#poolSize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="poolSize:Int"></a>
       <a id="poolSize:Int"></a>
@@ -471,7 +533,7 @@
       <a id="start:Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -586,7 +648,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -602,7 +667,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -618,9 +686,29 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
+    </li><li name="tiscaf.HServer#warning" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="warning(msg:String):Unit"></a>
+      <a id="warning(String):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">warning</span><span class="params">(<span name="msg">msg: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Called to log a tiscaf internal warning.</p><div class="fullcomment"><div class="comment cmt"><p>Called to log a tiscaf internal warning.
+ <b>Note</b>: This methods is not intended to be called by applications using tiscaf.
+ Override it to log using your favorite logging library.
+ By default, logs the message to stdout.
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="package.html" class="extype" name="tiscaf">tiscaf</a>] </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="tiscaf.HServer">HServer</a> → <a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -630,7 +718,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="tiscaf.HLoggable">
+              <h3>Inherited from <a href="HLoggable.html" class="extype" name="tiscaf.HLoggable">HLoggable</a></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
@@ -650,7 +740,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>

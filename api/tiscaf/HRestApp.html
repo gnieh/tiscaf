@@ -9,11 +9,6 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../lib/template.js"></script>
-      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
-      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -224,8 +219,11 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="tiscaf.HApp#cookieKey" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -307,8 +305,11 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">java.lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="tiscaf.HRestApp#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
@@ -444,7 +445,7 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="tiscaf.HApp#onSessionInvalidate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onSessionInvalidate(sid:String,data:scala.collection.mutable.Map[Any,Any]):Unit"></a>
+      <a id="onSessionInvalidate(sid:String,data:Map[Any,Any]):Unit"></a>
       <a id="onSessionInvalidate(String,Map[Any,Any]):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -452,13 +453,26 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onSessionInvalidate</span><span class="params">(<span name="sid">sid: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <span class="extype" name="scala.collection.mutable.Map">Map</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">onSessionInvalidate</span><span class="params">(<span name="sid">sid: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Called when the given session is invalidated.</p><div class="fullcomment"><div class="comment cmt"><p>Called when the given session is invalidated.
  Override this to perform specific actions on invalidate.
  Does nothing by default.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HApp.html" class="extype" name="tiscaf.HApp">HApp</a></dd></dl></div>
+    </li><li name="tiscaf.HRestApp#patch" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="patch(handler:PartialFunction[(List[String],tiscaf.HReqData),tiscaf.HLet]):Unit"></a>
+      <a id="patch(PartialFunction[(List[String],HReqData),HLet]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">patch</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[(<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>], <a href="HReqData.html" class="extype" name="tiscaf.HReqData">HReqData</a>), <a href="HLet.html" class="extype" name="tiscaf.HLet">HLet</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      
     </li><li name="tiscaf.HRestApp#post" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="post(handler:PartialFunction[(List[String],tiscaf.HReqData),tiscaf.HLet]):Unit"></a>
       <a id="post(PartialFunction[(List[String],HReqData),HLet]):Unit"></a>
@@ -469,6 +483,19 @@
       </span>
       <span class="symbol">
         <span class="name">post</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[(<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>], <a href="HReqData.html" class="extype" name="tiscaf.HReqData">HReqData</a>), <a href="HLet.html" class="extype" name="tiscaf.HLet">HLet</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="tiscaf.HRestApp#put" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="put(handler:PartialFunction[(List[String],tiscaf.HReqData),tiscaf.HLet]):Unit"></a>
+      <a id="put(PartialFunction[(List[String],HReqData),HLet]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">put</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[(<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>], <a href="HReqData.html" class="extype" name="tiscaf.HReqData">HReqData</a>), <a href="HLet.html" class="extype" name="tiscaf.HLet">HLet</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       
@@ -569,7 +596,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -585,7 +615,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -601,7 +634,10 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">()</span>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
               
         </dd></dl></div>
     </li></ol>
@@ -635,7 +671,6 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-
-
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
     </body>
       </html>
