@@ -1,4 +1,4 @@
-tiscaf
+tiscaf [![Build Status](https://travis-ci.org/gnieh/tiscaf.png?branch=master)](https://travis-ci.org/gnieh/tiscaf)
 ======
 
 Introduction
