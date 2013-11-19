@@ -9,12 +9,10 @@ object TiscafProject extends Build {
     organization in ThisBuild := "org.gnieh",
     licenses in ThisBuild += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
     homepage in ThisBuild := Some(url("https://github.com/gnieh/tiscaf/wiki")),
-    scalaVersion in ThisBuild := "2.10.2",
-    crossScalaVersions in ThisBuild := Seq("2.9.3", "2.10.2"),
     libraryDependencies in ThisBuild ++= dependencies,
     resourceDirectories in Compile := List(),
     features)
-      settings (publishSettings: _*)) aggregate(core)
+      settings (publishSettings: _*)) aggregate(core, rest)
 
   def features = scalacOptions in ThisBuild <++= scalaVersion map { v => if (v.startsWith("2.10"))
       Seq("-deprecation", "-language:_")
@@ -62,6 +60,8 @@ object TiscafProject extends Build {
       settings(
         version := "0.9-SNAPSHOT",
         name := "tiscaf",
+        scalaVersion := "2.10.2",
+        crossScalaVersions := Seq("2.9.3", "2.10.2"),
         description := "Lightweight HTTP Server in and for Scala"
       )
       settings(osgiSettings: _*)
@@ -72,6 +72,26 @@ object TiscafProject extends Build {
         ),
         OsgiKeys.additionalHeaders := Map (
           "Bundle-Name" -> "Tiscaf HTTP Server"
+        ),
+        OsgiKeys.privatePackage := Seq()
+      )
+    )
+
+  lazy val rest =
+    (Project("tiscaf-rest", file("rest")) dependsOn(core)
+      settings(
+        version := "0.1-SNAPSHOT",
+        name := "tiscaf-rest",
+        scalaVersion := "2.10.2",
+        description := "Rest API support for tiscaf"
+      )
+      settings(osgiSettings: _*)
+      settings(
+        OsgiKeys.exportPackage := Seq(
+          "tiscaf.rest"
+        ),
+        OsgiKeys.additionalHeaders := Map (
+          "Bundle-Name" -> "Tiscaf Rest Helpers"
         ),
         OsgiKeys.privatePackage := Seq()
       )
