@@ -86,9 +86,9 @@ private class HAcceptor(
   in.headers = headers
 
   // HLoggable API
-  protected[tiscaf] def error(msg: String, exn: Exception) = logger.error(msg, exn)
-  protected[tiscaf] def warning(msg: String) = logger.warning(msg)
-  protected[tiscaf] def info(msg: String) = logger.info(msg)
+  def error(msg: String, t: Throwable) = logger.error(msg, t)
+  def warning(msg: String) = logger.warning(msg)
+  def info(msg: String) = logger.info(msg)
 
   def accept(bytes: Array[Byte]): Unit = {
     in.tail = in.tail ++ bytes
@@ -232,7 +232,7 @@ private class HAcceptor(
         new tiscaf.let.ErrLet(HStatus.ServiceUnavailable, "too many sessions") aact (tk)
       } catch {
         case e: Exception =>
-          future {
+          Future.successful {
             error("A problem occurred while notifying client", e)
           }
       }
@@ -251,7 +251,7 @@ private class HAcceptor(
           } // connection can be closed here...
           catch {
             case _: Exception => // ...and "header is already sent" will be arised; don't report it.
-              future {}
+              Future.successful(())
           }
       }
     }

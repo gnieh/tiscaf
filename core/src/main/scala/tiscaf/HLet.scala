@@ -31,7 +31,7 @@ trait HLet {
    *  This method is called asynchronously (hence the name `aact`)
    *  @see [[tiscaf.HTalk]]
    */
-  def aact(talk: HTalk)(implicit executionContext: ExecutionContext): Future[Unit]
+  def aact(talk: HTalk): Future[Unit]
 
   //-------------------- to override ------------------------
 
@@ -162,7 +162,7 @@ trait HSuspendable {
  *  @author Lucas Satabin */
 trait HSimpleLet extends HLet {
 
-  final override def aact(talk: HTalk)(implicit executionContext: ExecutionContext) = future {
+  final override def aact(talk: HTalk) = Future.successful {
     act(talk)
   }
 

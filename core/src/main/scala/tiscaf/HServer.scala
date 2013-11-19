@@ -19,7 +19,7 @@ package tiscaf
 
 import javax.net.ssl.SSLEngine
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent._
 
 /** A server provides:
  *   - few common settings,
@@ -41,10 +41,6 @@ trait HServer extends HLoggable {
   protected def ports: Set[Int]
 
   //------------------------- to override ------------------------------
-
-  /** The execution context for promises and futures */
-  protected implicit def executionContext =
-    ExecutionContext.Implicits.global
 
   /** Returns the server name, used in response headers. */
   protected def name = "tiscaf"
@@ -85,9 +81,9 @@ trait HServer extends HLoggable {
    *  Override it to log using your favorite logging library.
    *  By default, logs the message and the stack trace to stderr.
    */
-  protected[tiscaf] def error(msg: String, e: Exception): Unit = {
+  def error(msg: String, t: Throwable): Unit = {
     Console.err.println(msg)
-    e.printStackTrace
+    t.printStackTrace
   }
 
   /** Called to log a tiscaf internal warning.
@@ -95,7 +91,7 @@ trait HServer extends HLoggable {
    *  Override it to log using your favorite logging library.
    *  By default, logs the message to stdout.
    */
-  protected[tiscaf] def warning(msg: String): Unit = {
+  def warning(msg: String): Unit = {
     println(msg)
   }
 
@@ -104,7 +100,7 @@ trait HServer extends HLoggable {
    *  Override it to log using your favorite logging library.
    *  By default, logs the message to stdout.
    */
-  protected[tiscaf] def info(msg: String): Unit = {
+  def info(msg: String): Unit = {
     println(msg)
   }
 
@@ -141,6 +137,7 @@ trait HServer extends HLoggable {
   /** Starts the server. */
   def start: Unit = synchronized {
     if (isStopped.get) {
+      talksExe.prepare()
       plexer.start
       ports.foreach { port => plexer.addListener(peerFactory, port) }
       // listen to SSL ports if any configured
@@ -172,7 +169,12 @@ trait HServer extends HLoggable {
 
   // nothing must be started in init, so using few objects and lazy vals
 
-  private lazy val talksExe = new sync.SyncExe(poolSize, queueSize, "ServerExecutorPool", error)
+  private lazy val talksExe = new sync.SyncQuExecutionContext(poolSize, queueSize, "ServerExecutorPool") {
+    // HLoggable API
+    def error(msg: String, t: Throwable) = self.error(msg, t)
+    def warning(msg: String) = self.warning(msg)
+    def info(msg: String) = self.info(msg)
+  }
   private val timeoutMillis = connectionTimeoutSeconds * 1000L
   private val isStopped = new sync.SyncBool(true)
 
@@ -181,9 +183,9 @@ trait HServer extends HLoggable {
     def tcpNoDelay: Boolean = self.tcpNoDelay
 
     // HLoggable API
-    protected[tiscaf] def error(msg: String, exn: Exception) = self.error(msg, exn)
-    protected[tiscaf] def warning(msg: String) = self.warning(msg)
-    protected[tiscaf] def info(msg: String) = self.info(msg)
+    def error(msg: String, t: Throwable) = self.error(msg, t)
+    def warning(msg: String) = self.warning(msg)
+    def info(msg: String) = self.info(msg)
 
     def ssl = self.ssl
   }
@@ -203,13 +205,13 @@ trait HServer extends HLoggable {
           def bufferSize: Int = session.getApplicationBufferSize
 
           // HLoggable API
-          protected[tiscaf] def error(msg: String, exn: Exception) = HServer.this.error(msg, exn)
-          protected[tiscaf] def warning(msg: String) = HServer.this.warning(msg)
-          protected[tiscaf] def info(msg: String) = HServer.this.info(msg)
+          def error(msg: String, t: Throwable) = HServer.this.error(msg, t)
+          def warning(msg: String) = HServer.this.warning(msg)
+          def info(msg: String) = HServer.this.info(msg)
 
           def engine = sslEngine
 
-          implicit def executionContext = HServer.this.executionContext
+          implicit def talksExe = HServer.this.talksExe
 
           val acceptor =
             new HAcceptor(
@@ -220,7 +222,10 @@ trait HServer extends HLoggable {
               maxPostDataLength,
               defaultHeaders)
 
-          def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
+          def submit(toRun: =>Unit): Unit = if (!isStopped.get) {
+            info("Task submitted to SSL peer")
+            future(toRun)
+          }
         }
       case None =>
         // non SSL connection
@@ -232,11 +237,11 @@ trait HServer extends HLoggable {
           def bufferSize: Int = HServer.this.bufferSize
 
           // HLoggable API
-          protected[tiscaf] def error(msg: String, exn: Exception) = HServer.this.error(msg, exn)
-          protected[tiscaf] def warning(msg: String) = HServer.this.warning(msg)
-          protected[tiscaf] def info(msg: String) = HServer.this.info(msg)
+          def error(msg: String, t: Throwable) = HServer.this.error(msg, t)
+          def warning(msg: String) = HServer.this.warning(msg)
+          def info(msg: String) = HServer.this.info(msg)
 
-          implicit def executionContext = HServer.this.executionContext
+          implicit def talksExe = HServer.this.talksExe
 
           val acceptor =
             new HAcceptor(
@@ -247,8 +252,12 @@ trait HServer extends HLoggable {
               maxPostDataLength,
               defaultHeaders)
 
-          def submit(toRun: Runnable): Unit = if (!isStopped.get) talksExe.submit(toRun)
+          def submit(toRun: =>Unit): Unit = if (!isStopped.get) {
+            info("Task submitted to plain peer")
+            future(toRun)
+          }
         }
     }
 
 }
+

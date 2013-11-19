@@ -27,6 +27,7 @@ import java.nio.ByteBuffer
 import javax.net.ssl._
 
 import sync._
+import scala.concurrent.SyncVar
 
 private trait HPlexer extends HLoggable {
 
@@ -157,8 +158,8 @@ private trait HPlexer extends HLoggable {
 
   // check expired connections - not too often
   private val expireDelta = if (timeoutMillis > 10000L) 1000L else timeoutMillis / 10L
-  private val lastExpire = new SyncField[Long]
-  lastExpire.set(System.currentTimeMillis)
+  private val lastExpire = new SyncVar[Long]
+  lastExpire.put(System.currentTimeMillis)
 
   private def processExpiration: Unit = try {
     val now = System.currentTimeMillis
@@ -170,7 +171,10 @@ private trait HPlexer extends HLoggable {
         val att = key.attachment
         if (att == null || att.asInstanceOf[HKeyData].stamp < timeX) key.channel.close
       }
-      lastExpire.set(now)
+      // discard the old value
+      lastExpire.take
+      // and put the new one
+      lastExpire.put(now)
     }
   } catch {
     case e: Exception => error("A problem occured while closing an expired connection", e)

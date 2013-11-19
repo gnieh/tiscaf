@@ -16,7 +16,7 @@ object ServerOk extends HServer {
   override protected def tcpNoDelay = true // true for benchmarking only!!
   override def interruptTimeoutMillis = 100
 
-  override def error(msg: String, e: Exception): Unit = filterSomeErrors(e)
+  override def error(msg: String, t: Throwable): Unit = filterSomeErrors(t)
 
   private def filterSomeErrors(err: Throwable): Unit = err.getMessage match {
     case "Broken pipe"              =>

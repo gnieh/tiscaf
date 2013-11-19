@@ -32,10 +32,10 @@ package tiscaf
  */
 trait HLoggable {
 
-  protected[tiscaf] def info(msg: String): Unit
+  def info(msg: String): Unit
 
-  protected[tiscaf] def warning(msg: String): Unit
+  def warning(msg: String): Unit
 
-  protected[tiscaf] def error(msg: String, exn: Exception): Unit
+  def error(msg: String, t: Throwable): Unit
 
 }

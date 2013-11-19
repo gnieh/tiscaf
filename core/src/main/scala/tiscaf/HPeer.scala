@@ -34,9 +34,9 @@ private trait HPeer extends HLoggable {
   def bufferSize: Int
 
   val acceptor: HAcceptor
-  def submit(toRun: Runnable): Unit
+  def submit(toRun: =>Unit): Unit
 
-  implicit def executionContext: ExecutionContext
+  implicit def talksExe: ExecutionContext
 
   //-------------------------------------------------------------------
 
@@ -107,19 +107,15 @@ private trait HSimplePeer extends HPeer {
     theBuf.clear
     val wasRead = channel.read(theBuf)
     if (wasRead == -1) dispose // counterpart peer wants to write but writes nothing
-    else {
-      def toRun = new Runnable {
-        def run: Unit = {
-          acceptor.accept(theBuf.array.take(wasRead))
-          acceptor.in.reqState match {
-            case HReqState.IsReady   => acceptor.resolveAppLet; doTalkItself
-            case HReqState.IsInvalid => dispose
-            case _ /* WaitsForXxx */ => connRead
-          }
+    else
+      submit {
+        acceptor.accept(theBuf.array.take(wasRead))
+        acceptor.in.reqState match {
+          case HReqState.IsReady   => acceptor.resolveAppLet; doTalkItself
+          case HReqState.IsInvalid => dispose
+          case _ /* WaitsForXxx */ => connRead
         }
       }
-      submit(toRun)
-    }
   } catch {
     case e: Exception =>
       error("A problem occurred while reading request data", e)
@@ -198,36 +194,31 @@ private trait HSslPeer extends HPeer {
     val wasRead = channel.read(netBuffer)
     if (wasRead == -1) dispose // counterpart peer wants to write but writes nothing
     else {
-      def toRun = new Runnable {
-        def run: Unit = {
-
-          netBuffer.flip
-          var read = 0
-          var continue = true
-          while (continue && netBuffer.hasRemaining) {
-            val res = engine.unwrap(netBuffer, appBuffer)
-            read += res.bytesProduced
-            import SSLEngineResult.Status
-            if (res.getStatus == Status.BUFFER_UNDERFLOW) {
-              netBuffer.position(netBuffer.limit)
-              netBuffer.limit(netBuffer.capacity)
-              channel.read(netBuffer)
-              netBuffer.flip
-            } else if (res.getStatus == Status.CLOSED) {
-              continue = false
-            }
+      submit {
+        netBuffer.flip
+        var read = 0
+        var continue = true
+        while (continue && netBuffer.hasRemaining) {
+          val res = engine.unwrap(netBuffer, appBuffer)
+          read += res.bytesProduced
+          import SSLEngineResult.Status
+          if (res.getStatus == Status.BUFFER_UNDERFLOW) {
+            netBuffer.position(netBuffer.limit)
+            netBuffer.limit(netBuffer.capacity)
+            channel.read(netBuffer)
+            netBuffer.flip
+          } else if (res.getStatus == Status.CLOSED) {
+            continue = false
           }
+        }
 
-          acceptor.accept(appBuffer.array.take(read))
-          acceptor.in.reqState match {
-            case HReqState.IsReady   => acceptor.resolveAppLet; doTalkItself
-            case HReqState.IsInvalid => dispose
-            case _ /* WaitsForXxx */ => connRead
-          }
-
+        acceptor.accept(appBuffer.array.take(read))
+        acceptor.in.reqState match {
+          case HReqState.IsReady   => acceptor.resolveAppLet; doTalkItself
+          case HReqState.IsInvalid => dispose
+          case _ /* WaitsForXxx */ => connRead
         }
       }
-      submit(toRun)
     }
   } catch {
     case e: Exception =>
