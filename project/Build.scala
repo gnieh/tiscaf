@@ -6,31 +6,17 @@ import com.typesafe.sbt.osgi.OsgiKeys
 object TiscafProject extends Build {
 
   val tiscaf = (Project("tiscaf", file(".")) settings (
-    organization := "org.gnieh",
-    name := "tiscaf",
-    version := "0.9-SNAPSHOT",
-    description := "Lightweight HTTP Server in and for Scala",
-    licenses += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
-    homepage := Some(url("https://github.com/gnieh/tiscaf/wiki")),
+    organization in ThisBuild := "org.gnieh",
+    licenses in ThisBuild += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
+    homepage in ThisBuild := Some(url("https://github.com/gnieh/tiscaf/wiki")),
     scalaVersion in ThisBuild := "2.10.2",
-    crossScalaVersions := Seq("2.9.3", "2.10.2"),
-    libraryDependencies ++= dependencies,
+    crossScalaVersions in ThisBuild := Seq("2.9.3", "2.10.2"),
+    libraryDependencies in ThisBuild ++= dependencies,
     resourceDirectories in Compile := List(),
     features)
-      settings(osgiSettings: _*)
-      settings(
-        OsgiKeys.exportPackage := Seq(
-          "tiscaf",
-          "tiscaf.*"
-        ),
-        OsgiKeys.additionalHeaders := Map (
-          "Bundle-Name" -> "Tiscaf HTTP Server"
-        ),
-        OsgiKeys.privatePackage := Seq()
-      )
-      settings (publishSettings : _*))
+      settings (publishSettings: _*)) aggregate(core)
 
-  def features = scalacOptions <++= scalaVersion map { v => if (v.startsWith("2.10"))
+  def features = scalacOptions in ThisBuild <++= scalaVersion map { v => if (v.startsWith("2.10"))
       Seq("-deprecation", "-language:_")
     else
       Seq("-deprecation")
@@ -43,19 +29,19 @@ object TiscafProject extends Build {
 
   def publishSettings : Seq[Setting[_]] = Seq(
     // If we want on maven central, we need to be in maven style.
-    publishMavenStyle := true,
+    publishMavenStyle in ThisBuild := true,
     publishArtifact in Test := false,
     // The Nexus repo we're publishing to.
-    publishTo <<= version { (v : String) =>
+    publishTo in ThisBuild <<= version { (v : String) =>
       val nexus = "https://oss.sonatype.org/"
       if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
       else Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
     // Maven central cannot allow other repos. We're ok here because the artifacts we
     // we use externally are *optional* dependencies.
-    pomIncludeRepository := { x => false },
+    pomIncludeRepository in ThisBuild := { x => false },
     // Maven central wants some extra metadata to keep things 'clean'.
-    pomExtra := (
+    pomExtra in ThisBuild := (
       <scm>
         <url>git@github.com:gnieh/tiscaf.git</url>
         <connection>scm:git:git@github.com:gnieh/tiscaf.git</connection>
@@ -71,8 +57,28 @@ object TiscafProject extends Build {
         </developer>
       </developers>))
 
+  lazy val core =
+    (Project("tiscaf-core", file("core"))
+      settings(
+        version := "0.9-SNAPSHOT",
+        name := "tiscaf",
+        description := "Lightweight HTTP Server in and for Scala"
+      )
+      settings(osgiSettings: _*)
+      settings(
+        OsgiKeys.exportPackage := Seq(
+          "tiscaf",
+          "tiscaf.let"
+        ),
+        OsgiKeys.additionalHeaders := Map (
+          "Bundle-Name" -> "Tiscaf HTTP Server"
+        ),
+        OsgiKeys.privatePackage := Seq()
+      )
+    )
+
   /** Example projects */
   lazy val timeserver =
-    Project("timeserver", new File("examples/time")) dependsOn(tiscaf)
+    Project("timeserver", file("examples/time")) dependsOn(tiscaf)
 
 }
