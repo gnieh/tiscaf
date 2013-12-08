@@ -31,7 +31,7 @@ trait HLet {
    *  This method is called asynchronously (hence the name `aact`)
    *  @see [[tiscaf.HTalk]]
    */
-  def aact(talk: HTalk): Future[Unit]
+  def aact(talk: HTalk): Future[Any]
 
   //-------------------- to override ------------------------
 
