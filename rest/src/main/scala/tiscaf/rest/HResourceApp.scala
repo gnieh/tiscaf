@@ -25,15 +25,15 @@ package rest
 trait HResourceApp extends HApp with HRest {
 
   private var resources =
-    PartialFunction.empty[HReqData, PartialFunction[HReqType.Value, HLet]]
+    PartialFunction.empty[HReqData, PartialFunction[HReqVerb.Value, HLet]]
 
-  def resource(resolver: PartialFunction[HReqData, PartialFunction[HReqType.Value, HLet]]): Unit =
+  def resource(resolver: PartialFunction[HReqData, PartialFunction[HReqVerb.Value, HLet]]): Unit =
     resources = resources orElse resolver
 
   final def resolve(req: HReqData): Option[HLet] =
     for {
       resource <- resources.lift(req)
-      action <- resource.lift(req.method)
+      action <- resource.lift(HReqVerb.fromReqType(req.method))
     } yield action
 
 }
