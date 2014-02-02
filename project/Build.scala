@@ -120,6 +120,7 @@ object TiscafProject extends Build {
         description := "Websocket support for tiscaf"
       )
       settings(osgiSettings: _*)
+      settings(scalariformSettings: _*)
       settings(
         OsgiKeys.exportPackage := Seq(
           "tiscaf.websocket"
