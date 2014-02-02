@@ -2,6 +2,8 @@ import sbt._
 import Keys._
 import com.typesafe.sbt.osgi.SbtOsgi._
 import com.typesafe.sbt.osgi.OsgiKeys
+import com.typesafe.sbt.SbtScalariform._
+import scalariform.formatter.preferences._
 
 object TiscafProject extends Build {
 
@@ -13,6 +15,15 @@ object TiscafProject extends Build {
     resourceDirectories in Compile := List(),
     features)
       settings (publishSettings: _*)) aggregate(core, rest)
+
+  lazy val scalariformSettings = defaultScalariformSettings ++ Seq(
+    ScalariformKeys.preferences :=
+      ScalariformKeys.preferences.value
+        .setPreference(AlignSingleLineCaseStatements, true)
+        .setPreference(DoubleIndentClassDeclaration, true)
+        .setPreference(PreserveDanglingCloseParenthesis, true)
+        .setPreference(MultilineScaladocCommentsStartOnFirstLine, true)
+  )
 
   def features = scalacOptions in ThisBuild <++= scalaVersion map { v => if (v.startsWith("2.10"))
       Seq("-deprecation", "-language:_")
@@ -65,6 +76,7 @@ object TiscafProject extends Build {
         description := "Lightweight HTTP Server in and for Scala"
       )
       settings(osgiSettings: _*)
+      settings(scalariformSettings: _*)
       settings(
         OsgiKeys.exportPackage := Seq(
           "tiscaf",
@@ -86,6 +98,7 @@ object TiscafProject extends Build {
         description := "Rest API support for tiscaf"
       )
       settings(osgiSettings: _*)
+      settings(scalariformSettings: _*)
       settings(
         OsgiKeys.exportPackage := Seq(
           "tiscaf.rest"
