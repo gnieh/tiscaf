@@ -166,6 +166,6 @@ trait HSimpleLet extends HLet {
     act(talk)
   }
 
-  def act(talk: HTalk)
+  def act(talk: HTalk): Unit
 
 }
