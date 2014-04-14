@@ -16,9 +16,11 @@
  ******************************************************************************/
 package tiscaf
 
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 object HResponse {
-  private val stdDateFormat = new java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss")
+  private val stdDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH)
   private val offset = java.util.TimeZone.getDefault.getRawOffset
 
   def stdDateString(mills : Long) = stdDateFormat.synchronized {
