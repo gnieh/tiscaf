@@ -80,7 +80,8 @@ object TiscafProject extends Build {
       settings(
         OsgiKeys.exportPackage := Seq(
           "tiscaf",
-          "tiscaf.let"
+          "tiscaf.let",
+          "tiscaf.sync"
         ),
         OsgiKeys.additionalHeaders := Map (
           "Bundle-Name" -> "Tiscaf HTTP Server"
@@ -112,6 +113,6 @@ object TiscafProject extends Build {
 
   /** Example projects */
   lazy val timeserver =
-    Project("timeserver", file("examples/time")) dependsOn(tiscaf)
+    Project("timeserver", file("examples/time")) dependsOn(core)
 
 }
