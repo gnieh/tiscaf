@@ -42,6 +42,9 @@ trait HServer extends HLoggable {
 
   //------------------------- to override ------------------------------
 
+  /** The host the server binds to */
+  protected def bindHost = "127.0.0.1"
+
   /** Returns the server name, used in response headers. */
   protected def name = "tiscaf"
 
@@ -139,10 +142,10 @@ trait HServer extends HLoggable {
     if (isStopped.get) {
       talksExe.prepare()
       plexer.start
-      ports.foreach { port => plexer.addListener(peerFactory, port) }
+      ports.foreach { port => plexer.addListener(peerFactory, bindHost, port) }
       // listen to SSL ports if any configured
       val sslPorts = ssl.map { ssl =>
-        plexer.addSslListener(peerFactory, ssl)
+        plexer.addSslListener(peerFactory, bindHost, ssl)
         ssl.port
       }
       startStopListener

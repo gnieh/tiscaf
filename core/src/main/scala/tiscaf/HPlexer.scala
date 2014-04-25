@@ -64,12 +64,12 @@ private trait HPlexer extends HLoggable {
     }
   }
 
-  final def addListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
+  final def addListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, bindHost: String, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
     try {
       val serverChannel = ServerSocketChannel.open
       servers(serverChannel) = ()
       serverChannel.configureBlocking(true)
-      serverChannel.socket.bind(new InetSocketAddress(port))
+      serverChannel.socket.bind(new InetSocketAddress(bindHost, port))
 
       while (isWorking.get) try {
         val socketCannel = serverChannel.accept
@@ -91,12 +91,12 @@ private trait HPlexer extends HLoggable {
     }
   }
 
-  final def addSslListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, sslData: HSslContext): Unit = Sync.spawnNamed("Acceptor-" + sslData.port) {
+  final def addSslListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, bindHost: String, sslData: HSslContext): Unit = Sync.spawnNamed("Acceptor-" + sslData.port) {
     try {
       val serverChannel = ServerSocketChannel.open
       servers(serverChannel) = ()
       serverChannel.configureBlocking(true)
-      serverChannel.socket.bind(new InetSocketAddress(sslData.port))
+      serverChannel.socket.bind(new InetSocketAddress(bindHost, sslData.port))
 
       while (isWorking.get) try {
         val socketChannel = serverChannel.accept
