@@ -213,7 +213,7 @@ private class HAcceptor(
       .filter(_.length >= 2)
       .map(_.split("="))
       .filter(is => is.length > 0 && is.size > 0)
-      .map { p => if (p.size == 1) Pair(p(0), "") else Pair(p(0), p(1)) }
+      .map { p => if (p.size == 1) (p(0), "") else (p(0), p(1)) }
 
     for (newPair <- newPairs) yield in.parMap.get(newPair._1) match {
       case None         => in.parMap(newPair._1) = Seq(newPair._2)

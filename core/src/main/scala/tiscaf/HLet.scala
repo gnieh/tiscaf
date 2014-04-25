@@ -119,7 +119,7 @@ trait HLet {
 }
 
 class Suspended[T] {
-  private[tiscaf] val p = promise[T]
+  private[tiscaf] val p = Promise[T]()
 
   /** Resumes the computation with the given value and returns immediately */
   def resume(value: T) {
@@ -152,7 +152,7 @@ trait HSuspendable {
 
   protected def suspend[T](resume: T => Unit)(implicit manifest: Manifest[T],
     executionContext: ExecutionContext): Future[Unit] = {
-      suspend[T] flatMap (v => future(resume(v)))
+      suspend[T] flatMap (v => Future(resume(v)))
   }
 
 }

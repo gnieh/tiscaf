@@ -29,6 +29,8 @@ import javax.net.ssl._
 import sync._
 import scala.concurrent.SyncVar
 
+import scala.collection.JavaConverters._
+
 private trait HPlexer extends HLoggable {
 
   //---------------------- to implement ------------------------------
@@ -56,7 +58,8 @@ private trait HPlexer extends HLoggable {
     if (isWorking.get) {
       isWorking.set(false)
       selector.close
-      servers.foreach(_.asInstanceOf[ServerSocketChannel].close)
+      for((socket, _) <- servers)
+        socket.asInstanceOf[ServerSocketChannel].close
       servers.clear
     }
   }
@@ -64,7 +67,7 @@ private trait HPlexer extends HLoggable {
   final def addListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, port: Int): Unit = Sync.spawnNamed("Acceptor-" + port) {
     try {
       val serverChannel = ServerSocketChannel.open
-      servers += serverChannel
+      servers(serverChannel) = ()
       serverChannel.configureBlocking(true)
       serverChannel.socket.bind(new InetSocketAddress(port))
 
@@ -91,7 +94,7 @@ private trait HPlexer extends HLoggable {
   final def addSslListener(peerFactory: (SelectionKey, Option[SSLEngine]) => HPeer, sslData: HSslContext): Unit = Sync.spawnNamed("Acceptor-" + sslData.port) {
     try {
       val serverChannel = ServerSocketChannel.open
-      servers += serverChannel
+      servers(serverChannel) = ()
       serverChannel.configureBlocking(true)
       serverChannel.socket.bind(new InetSocketAddress(sslData.port))
 
@@ -131,14 +134,14 @@ private trait HPlexer extends HLoggable {
   //------------------------- internals --------------------------------------
 
   private val isWorking = new SyncBool(false)
-  private val servers = new scala.collection.mutable.HashSet[ServerSocketChannel] with scala.collection.mutable.SynchronizedSet[ServerSocketChannel]
+  private val servers = new java.util.concurrent.ConcurrentHashMap[ServerSocketChannel, Unit].asScala
   private val selector = Selector.open
   //-- in accordance with Ron Hitchens (Ron, thanks for the trick!)
   private val keySetGuard = new AnyRef
 
   //-----------------------------------------------------------
 
-  type KeyWant = Pair[SelectionKey, PeerWant.Value]
+  type KeyWant = (SelectionKey, PeerWant.Value)
   private val wakeQu = new SyncQu[KeyWant]
 
   private def processWakeQu: Unit = {

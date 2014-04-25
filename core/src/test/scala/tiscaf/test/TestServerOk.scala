@@ -37,11 +37,11 @@ class TestServerOk extends FlatSpec with ShouldMatchers with BeforeAndAfterAll {
 
   }
 
-  override def beforeAll(configMap: Map[String, Any]) {
+  override def beforeAll(configMap: ConfigMap) {
     server.start
   }
 
-  override def afterAll(configMap: Map[String, Any]) {
+  override def afterAll(configMap: ConfigMap) {
     server.stop
     Http.shutdown
   }

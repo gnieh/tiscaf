@@ -214,8 +214,8 @@ private class HReqHeader(streamStrings : Seq[String]) extends HReqHeaderData {
     def step(acc : Map[String, String], from : Seq[String]) : Map[String, String] = if (from.isEmpty) acc else {
       val s = from.head
       val idx = s.indexOf(":")
-      if (idx < 0) step(acc + Pair(s.trim.toLowerCase, ""), from.tail)
-      else step(acc + Pair(s.substring(0, idx).trim.toLowerCase, s.substring(idx + 1).trim), from.tail)
+      if (idx < 0) step(acc + (s.trim.toLowerCase -> ""), from.tail)
+      else step(acc + (s.substring(0, idx).trim.toLowerCase -> s.substring(idx + 1).trim), from.tail)
     }
     step(Map(), strings.tail) // skip first HTTP string
   }

@@ -11,7 +11,6 @@ object TiscafProject extends Build {
     organization in ThisBuild := "org.gnieh",
     licenses in ThisBuild += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
     homepage in ThisBuild := Some(url("https://github.com/gnieh/tiscaf/wiki")),
-    libraryDependencies in ThisBuild ++= dependencies,
     resourceDirectories in Compile := List(),
     features)
       settings (publishSettings: _*)) aggregate(core, rest)
@@ -25,16 +24,11 @@ object TiscafProject extends Build {
         .setPreference(MultilineScaladocCommentsStartOnFirstLine, true)
   )
 
-  def features = scalacOptions in ThisBuild <++= scalaVersion map { v => if (v.startsWith("2.10"))
+  def features = scalacOptions in ThisBuild <++= scalaVersion map { v => if (v.startsWith("2.1"))
       Seq("-deprecation", "-language:_")
     else
       Seq("-deprecation")
   }
-
-  def dependencies = Seq(
-    "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
-    "net.databinder.dispatch" %% "dispatch-core" % "0.11.0" % "test"
-  )
 
   def publishSettings : Seq[Setting[_]] = Seq(
     // If we want on maven central, we need to be in maven style.
@@ -71,8 +65,8 @@ object TiscafProject extends Build {
       settings(
         version := "0.9-SNAPSHOT",
         name := "tiscaf",
-        scalaVersion := "2.10.2",
-        crossScalaVersions := Seq("2.9.3", "2.10.2"),
+        scalaVersion := "2.11.0",
+        crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.0"),
         description := "Lightweight HTTP Server in and for Scala"
       )
       settings(osgiSettings: _*)
@@ -95,7 +89,8 @@ object TiscafProject extends Build {
       settings(
         version := "0.1-SNAPSHOT",
         name := "tiscaf-rest",
-        scalaVersion := "2.10.2",
+        scalaVersion := "2.11.0",
+        crossScalaVersions := Seq("2.10.4", "2.11.0"),
         description := "Rest API support for tiscaf"
       )
       settings(osgiSettings: _*)

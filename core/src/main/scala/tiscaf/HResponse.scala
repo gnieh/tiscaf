@@ -49,7 +49,7 @@ final private class HResponse(headers: Map[String, String]) {
   private var status : String = HResponse.defaultStatus
   // To ignore keys' case key -> value pairs are tranforming
   // into key.toLowerCase -> (key, value) pairs
-  private val map = new scala.collection.mutable.HashMap[String, Pair[String,String]]
+  private val map = new scala.collection.mutable.HashMap[String, (String,String)]
 
   setHeader("Content-Type", "text/html") // default if user forget
   setHeader("Server", "tiscaf httpd server") // default

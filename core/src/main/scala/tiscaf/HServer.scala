@@ -224,7 +224,7 @@ trait HServer extends HLoggable {
 
           def submit(toRun: =>Unit): Unit = if (!isStopped.get) {
             info("Task submitted to SSL peer")
-            future(toRun)
+            Future(toRun)
           }
         }
       case None =>
@@ -254,7 +254,7 @@ trait HServer extends HLoggable {
 
           def submit(toRun: =>Unit): Unit = if (!isStopped.get) {
             info("Task submitted to plain peer")
-            future(toRun)
+            Future(toRun)
           }
         }
     }
