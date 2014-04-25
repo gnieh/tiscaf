@@ -62,6 +62,9 @@ trait HServer extends HLoggable {
   /** Returns the executor queue size. */
   protected def queueSize: Int = Int.MaxValue
 
+  /** Sets it to true to have internal information from tiscaf logged */
+  protected val logInternals: Boolean = false
+
   /** Returns the NIO buffer size. */
   def bufferSize: Int = 4096 // public to be used in, say, FsLet
 
@@ -84,7 +87,7 @@ trait HServer extends HLoggable {
    *  Override it to log using your favorite logging library.
    *  By default, logs the message and the stack trace to stderr.
    */
-  def error(msg: String, t: Throwable): Unit = {
+  def error(msg: String, t: Throwable): Unit = if(logInternals) {
     Console.err.println(msg)
     t.printStackTrace
   }
@@ -94,7 +97,7 @@ trait HServer extends HLoggable {
    *  Override it to log using your favorite logging library.
    *  By default, logs the message to stdout.
    */
-  def warning(msg: String): Unit = {
+  def warning(msg: String): Unit = if(logInternals) {
     println(msg)
   }
 
@@ -103,7 +106,7 @@ trait HServer extends HLoggable {
    *  Override it to log using your favorite logging library.
    *  By default, logs the message to stdout.
    */
-  def info(msg: String): Unit = {
+  def info(msg: String): Unit = if(logInternals) {
     println(msg)
   }
 
