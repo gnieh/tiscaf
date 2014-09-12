@@ -7,13 +7,15 @@ import scalariform.formatter.preferences._
 
 object TiscafProject extends Build {
 
-  val tiscaf = (Project("tiscaf", file(".")) settings (
-    organization in ThisBuild := "org.gnieh",
-    licenses in ThisBuild += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
-    homepage in ThisBuild := Some(url("https://github.com/gnieh/tiscaf/wiki")),
+  val commonSettings = Seq(
+    organization := "org.gnieh",
+    licenses += "LGPL v3" -> url("http://www.gnu.org/licenses/lgpl-3.0.txt"),
+    homepage := Some(url("https://github.com/gnieh/tiscaf/wiki")),
     resourceDirectories in Compile := List(),
-    features)
-      settings (publishSettings: _*)) aggregate(core, rest)
+    features
+  )
+
+  val tiscaf = (Project("tiscaf", file("."))).aggregate(core, rest)
 
   lazy val scalariformSettings = defaultScalariformSettings ++ Seq(
     ScalariformKeys.preferences :=
@@ -32,7 +34,7 @@ object TiscafProject extends Build {
 
   def publishSettings : Seq[Setting[_]] = Seq(
     // If we want on maven central, we need to be in maven style.
-    publishMavenStyle in ThisBuild := true,
+    publishMavenStyle := true,
     publishArtifact in Test := false,
     // The Nexus repo we're publishing to.
     publishTo in ThisBuild <<= version { (v : String) =>
@@ -62,13 +64,15 @@ object TiscafProject extends Build {
 
   lazy val core =
     (Project("tiscaf-core", file("core"))
+      settings(commonSettings: _*)
       settings(
-        version := "0.9-SNAPSHOT",
+        version := "0.9",
         name := "tiscaf",
-        scalaVersion := "2.11.0",
-        crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.0"),
+        scalaVersion := "2.11.2",
+        crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.2"),
         description := "Lightweight HTTP Server in and for Scala"
       )
+      settings (publishSettings: _*)
       settings(osgiSettings: _*)
       settings(scalariformSettings: _*)
       settings(
@@ -86,13 +90,15 @@ object TiscafProject extends Build {
 
   lazy val rest =
     (Project("tiscaf-rest", file("rest")) dependsOn(core)
+      settings(commonSettings: _*)
       settings(
-        version := "0.1-SNAPSHOT",
+        version := "0.1",
         name := "tiscaf-rest",
-        scalaVersion := "2.11.0",
-        crossScalaVersions := Seq("2.10.4", "2.11.0"),
+        scalaVersion := "2.11.2",
+        crossScalaVersions := Seq("2.10.4", "2.11.2"),
         description := "Rest API support for tiscaf"
       )
+      settings (publishSettings: _*)
       settings(osgiSettings: _*)
       settings(scalariformSettings: _*)
       settings(
